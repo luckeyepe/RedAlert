@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:background="@drawable/bg"
+        android:layout_height="match_parent"
+        tools:context=".activities.Signup2Activity">
+
+    <android.support.v7.widget.CardView
+            android:layout_width="395dp"
+            android:layout_height="410dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="14dp"
+            app:cardBackgroundColor="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="85dp"
+                    android:layout_marginRight="75dp"
+                    android:text="Enter User Information"
+                    android:textColor="#fff"
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:paddingStart="25dp"
+                    android:paddingEnd="25dp">
+
+                <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                          android:layout_marginLeft="130dp"
+                          android:text="Gender"
+                          android:textSize="18dp" android:id="@+id/txt_signup2Gender"/>
+                <RadioGroup android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:layout_marginLeft="140dp" android:id="@+id/rg_signup2Gender">
+                    <RadioButton android:layout_width="match_parent" android:layout_height="match_parent"
+                                 android:text="Male" android:id="@+id/rb_signup2Male"/>
+                    <RadioButton android:layout_width="match_parent" android:layout_height="match_parent"
+                                 android:text="Female" android:id="@+id/signup2Female"/>
+                </RadioGroup>
+                <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                          android:layout_marginLeft="130dp"
+                          android:text="Organ Donor"
+                          android:textSize="18dp" android:id="@+id/txt_signup2OrganDonor"/>
+                <RadioGroup android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:layout_marginLeft="140dp" android:id="@+id/rg_signup2OrganDonor">
+                    <RadioButton android:layout_width="match_parent" android:layout_height="match_parent"
+                                 android:text="Yes" android:id="@+id/rb_signup2Yes"/>
+                    <RadioButton android:layout_width="match_parent" android:layout_height="match_parent"
+                                 android:text="No" android:id="@+id/rb_signup2No"/>
+                </RadioGroup>
+                <EditText
+                        android:id="@+id/edt_signup2BloodType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/selector_bg_edit_2"
+                        android:gravity="center"
+                        android:hint="Blood Type"
+                        android:inputType="text"
+                        android:paddingBottom="10dp"
+                        android:textColor="#f0f7f4"
+                        android:textCursorDrawable="@drawable/bg_input_cursor_2"
+                        android:textSize="18sp"/>
+
+                <EditText
+                        android:id="@+id/edt_signup2Alergies"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/selector_bg_edit_2"
+                        android:gravity="center"
+                        android:hint="Alegries i.e. peanuts, milk, etc."
+                        android:inputType="text"
+                        android:paddingBottom="10dp"
+                        android:textColor="#f0f7f4"
+                        android:textCursorDrawable="@drawable/bg_input_cursor_2"
+                        android:textSize="18sp"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <Button
+                        android:id="@+id/btn_signupNext2"
+                        android:layout_width="160dp"
+                        android:layout_height="45dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/bt_shape"
+                        android:stateListAnimator="@drawable/state_list_animator_z"
+                        android:text="Next"
+                        android:textColor="#d3d3d3" />
+            </RelativeLayout>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</android.support.constraint.ConstraintLayout>

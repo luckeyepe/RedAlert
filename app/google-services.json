@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "110816874",
+    "firebase_url": "https://redalert-c67d8.firebaseio.com",
+    "project_id": "redalert-c67d8",
+    "storage_bucket": "redalert-c67d8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110816874:android:c31990fea3cca9fd",
+        "android_client_info": {
+          "package_name": "com.example.mickey.redalert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110816874-53ujfhd0idjvv0oco758iriv01ngvels.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mickey.redalert",
+            "certificate_hash": "f7cecba016bb38e3034ff00ca4f6f860092b8daf"
+          }
+        },
+        {
+          "client_id": "110816874-8lto4n3bmb7dtpo5v46ak6ek2klc3e4d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9ND7JBQysligzVC6UpyUenzi04EB2-XY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110816874-8lto4n3bmb7dtpo5v46ak6ek2klc3e4d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

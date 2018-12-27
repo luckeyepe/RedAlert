@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+      tools:context = ".activities.DashboardActivity"
+      xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Account" android:id="@+id/item_menuAccount"/>
-    <item android:title="Logout" android:id="@+id/item_menuLogout"/>
+    <item
+            android:title="Profile"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:id="@+id/item_menuAccount"/>
+    <item android:title="Messages"
+          android:icon="@drawable/ic_message_black_24dp"
+          android:id="@+id/item_menuMessages"/>
+    <item android:title="Logout"
+          android:icon="@drawable/ic_exit_to_app_black_24dp"
+          android:id="@+id/item_menuLogout"/>
 </menu>

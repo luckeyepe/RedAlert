@@ -27,16 +27,17 @@ class Signup2Activity : AppCompatActivity() {
         btn_signupNext2.setOnClickListener {
             var user = User()
             user.user_id = mCurrentUser!!.uid
-            user.user_blood_type = edt_signup2BloodType.text.toString().trim()
+            user.user_bloodType = edt_signup2BloodType.text.toString().trim()
             var allergyString = edt_signup2Alergies.text.toString().trim()
-            if (rg_signup2Gender.checkedRadioButtonId != -1 && rg_signup2OrganDonor.checkedRadioButtonId != -1 && !user.user_blood_type.isNullOrEmpty() && !allergyString.isNullOrEmpty()) {
+
+            if (rg_signup2Gender.checkedRadioButtonId != -1 && rg_signup2OrganDonor.checkedRadioButtonId != -1 && !user.user_bloodType.isNullOrEmpty() && !allergyString.isNullOrEmpty()) {
                 if (rg_signup2Gender.checkedRadioButtonId == R.id.rb_signup2Male){
                     user.user_gender = "M"
                 }else{
                     user.user_gender = "F"
                 }
 
-                user.user_is_organ_donor = rg_signup2OrganDonor.checkedRadioButtonId == R.id.rb_signup2Yes
+                user.user_isOrganDonor = rg_signup2OrganDonor.checkedRadioButtonId == R.id.rb_signup2Yes
 
                 addAdditionalInfo(user, allergyString)
             }else{
@@ -48,9 +49,9 @@ class Signup2Activity : AppCompatActivity() {
     private fun addAdditionalInfo(user: User, allergyString: String) {
         mDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(user.user_id!!)
         var userAddedDetails = HashMap<String, Any>()
-        userAddedDetails["user_blood_type"] = user.user_blood_type!!
+        userAddedDetails["user_blood_type"] = user.user_bloodType!!
         userAddedDetails["user_gender"] = user.user_gender!!
-        userAddedDetails["user_is_organ_donor"] = user.user_is_organ_donor!!
+        userAddedDetails["user_is_organ_donor"] = user.user_isOrganDonor!!
 
         mDatabase!!.updateChildren(userAddedDetails).addOnSuccessListener {
             //split allergy into array

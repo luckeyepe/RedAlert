@@ -71,9 +71,11 @@
                         app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp">
                 <RadioButton android:layout_width="70dp" android:layout_height="match_parent"
-                             android:text="Male" android:id="@+id/rb_signup2Male"/>
+                             android:buttonTint="#f0f7f4"
+                             android:text="Male" android:id="@+id/rb_signup2Male" android:textColor="#f0f7f4"/>
                 <RadioButton android:layout_width="match_parent" android:layout_height="match_parent"
-                             android:text="Female" android:id="@+id/signup2Female"/>
+                             android:buttonTint="#f0f7f4"
+                             android:text="Female" android:id="@+id/signup2Female" android:textColor="#f0f7f4"/>
             </RadioGroup>
             <RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -84,9 +86,11 @@
                         app:layout_constraintEnd_toEndOf="parent"
             >
                 <RadioButton android:layout_width="70dp" android:layout_height="match_parent"
-                             android:text="Yes" android:id="@+id/rb_signup2Yes"/>
+                             android:buttonTint="#f0f7f4"
+                             android:text="Yes" android:id="@+id/rb_signup2Yes" android:textColor="#f0f7f4"/>
                 <RadioButton android:layout_width="70dp" android:layout_height="match_parent"
-                             android:text="No" android:id="@+id/rb_signup2No"/>
+                             android:buttonTint="#f0f7f4"
+                             android:text="No" android:id="@+id/rb_signup2No" android:textColor="#f0f7f4"/>
             </RadioGroup>
             <EditText
                     android:id="@+id/edt_signup2Alergies"
@@ -94,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/selector_bg_edit_2"
                     android:gravity="center"
-                    android:hint="Alegries i.e. peanuts, milk, etc."
+                    android:hint="i.e. peanuts, milk, etc."
                     android:inputType="text"
                     android:paddingBottom="10dp"
                     android:textColor="#f0f7f4"
@@ -123,12 +127,15 @@
                     app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView" android:layout_marginTop="8dp"/>
             <TextView
-                    android:text="TextView"
+                    android:text="Blood Type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:layout_editor_absoluteX="152dp" android:id="@+id/textView"
-                    app:layout_constraintTop_toBottomOf="@+id/rg_signup2OrganDonor" tools:text="Blood Type"
-                    android:textSize="18sp" android:layout_marginTop="12dp"/>
+                    android:id="@+id/textView"
+                    app:layout_constraintTop_toBottomOf="@+id/rg_signup2OrganDonor"
+                    android:textSize="18sp" android:layout_marginTop="12dp"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="152dp"
+                    android:layout_marginStart="152dp" app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="152dp" android:layout_marginRight="152dp"/>
             <TextView
                     android:text="Allergies"
                     android:layout_width="wrap_content"

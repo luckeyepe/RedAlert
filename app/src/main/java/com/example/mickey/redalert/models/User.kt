@@ -17,6 +17,8 @@ class User {
     var user_profilePictureURL: String ?= null
     var user_bloodType: String ?= null
     var user_isOrganDonor: Boolean ?= null
+    var user_allergies: Array<String> ?= null
+    var user_user_emergencyContacts: ArrayList<Long> ?= null
 
     constructor(
         user_id: String?,

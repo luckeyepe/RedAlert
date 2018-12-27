@@ -107,9 +107,9 @@ class SignupActivity : AppCompatActivity() {
                                 alertDialog.setMessage("Success")
                                 alertDialog.setTitle("SIGN UP SUCCESS")
                                 alertDialog.show()
-//                                var signup2 = Intent(this, Signup2Activity::class.java)
-//                                startActivity(signup2)
-//                                finish()
+                                var signup2 = Intent(this, Signup2Activity::class.java)
+                                startActivity(signup2)
+                                finish()
                             }else{
                                 Log.e("$TAG Error", task.exception.toString())
                                 var alertDialog = AlertDialog.Builder(this)

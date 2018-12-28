@@ -111,7 +111,7 @@ class Signup3Activity : AppCompatActivity() {
             if (listView_signup3EmergencyContacts.adapter.count == 0){
                 Toast.makeText(this, "Sorry, but you need to at least one valid emergency contact", Toast.LENGTH_LONG).show()
             }else{
-                var dashboardActivity = Intent(this, DashboardActivity::class.java)
+                var dashboardActivity = Intent(this, DashboardActivityJava::class.java)
                 startActivity(dashboardActivity)
             }
         }

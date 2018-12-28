@@ -100,7 +100,13 @@ class AccountDetailsActivity : AppCompatActivity() {
                         }
 
                         //load up user profile picture
-                        Picasso.get().load(user.user_profilePictureURL).into(circleImageView_acountDetailsProfilePicture)
+                        if(user.user_profilePictureURL == "Default"){
+                            Picasso.get().load(R.drawable.default_avata)
+                                .into(circleImageView_acountDetailsProfilePicture)
+                        }else {
+                            Picasso.get().load(user.user_profilePictureURL)
+                                .into(circleImageView_acountDetailsProfilePicture)
+                        }
                         progress.dismiss()
                     }
 

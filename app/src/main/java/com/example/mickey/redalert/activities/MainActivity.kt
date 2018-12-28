@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             user = firebaseAuth.currentUser
             if (user!=null){
                 //go to dashboard
-                startActivity(Intent(this, DashboardActivity::class.java))
+                startActivity(Intent(this, DashboardActivityJava::class.java))
                 finish()
             }
         }

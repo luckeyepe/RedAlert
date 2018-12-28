@@ -2,7 +2,8 @@ package com.example.mickey.redalert.models
 
 
 import java.sql.Timestamp
-
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class User {
@@ -12,14 +13,17 @@ class User {
     var user_email: String ?= null
     var user_address: String ?= null
     var user_contactNumber: Long ?= null
-    var user_birthDate: Timestamp ?= null
+    var user_birthDate: Date ?= null
     var user_gender: String ?= null
     var user_profilePictureURL: String ?= null
     var user_bloodType: String ?= null
     var user_isOrganDonor: Boolean ?= null
-    var user_allergies: Array<String> ?= null
-    var user_user_emergencyContacts: ArrayList<Long> ?= null
+    var user_allergies: ArrayList<String> ?= null
+    var user_emergencyContacts: ArrayList<Long> ?= null
 
+
+
+    constructor()
     constructor(
         user_id: String?,
         user_firstName: String?,
@@ -27,11 +31,13 @@ class User {
         user_email: String?,
         user_address: String?,
         user_contactNumber: Long?,
-        user_birthDate: Timestamp?,
+        user_birthDate: Date?,
         user_gender: String?,
         user_profilePictureURL: String?,
         user_bloodType: String?,
-        user_isOrganDonor: Boolean?
+        user_isOrganDonor: Boolean?,
+        user_allergies: ArrayList<String>?,
+        user_emergencyContacts: ArrayList<Long>?
     ) {
         this.user_id = user_id
         this.user_firstName = user_firstName
@@ -44,9 +50,9 @@ class User {
         this.user_profilePictureURL = user_profilePictureURL
         this.user_bloodType = user_bloodType
         this.user_isOrganDonor = user_isOrganDonor
+        this.user_allergies = user_allergies
+        this.user_emergencyContacts = user_emergencyContacts
     }
-
-    constructor()
 
 
 }

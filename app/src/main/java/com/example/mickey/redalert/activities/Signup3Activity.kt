@@ -2,12 +2,17 @@ package com.example.mickey.redalert.activities
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.Window
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.mickey.redalert.R
 import com.example.mickey.redalert.models.User
@@ -17,17 +22,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_signup3v2.*
+import kotlinx.android.synthetic.main.popup_emergency_contacts.view.*
 
 
 class Signup3Activity : AppCompatActivity() {
     private var mCurrentUser: FirebaseUser?= null
-    private var mDatabase: DatabaseReference?= null
+    private var mDatabase: DocumentReference?= null
     private var mAuth: FirebaseAuth?=null
     private var CONTACT_NUMBERS = ArrayList<Int>(0)
     var GALLERY_ID: Int = 1
@@ -42,36 +52,121 @@ class Signup3Activity : AppCompatActivity() {
         var user = User()
         user.user_id = mCurrentUser!!.uid
 
+        //on create of the activity fill the listview if available
+        fillUpListView()
+
         btn_signup3AddPhoneNumber.setOnClickListener {
-            if (edt_signup3ContactNumber.text.toString().trim().isNullOrEmpty()){
-                Toast.makeText(this, "Sorry, but you need to fill in a valid emergency contact", Toast.LENGTH_LONG).show()
-            }else{
-                CONTACT_NUMBERS.add(edt_signup3ContactNumber.text.toString().trim().toInt())
+//            if (edt_signup3ContactNumber.text.toString().trim().isNullOrEmpty()){
+//                Toast.makeText(this, "Sorry, but you need to fill in a valid emergency contact", Toast.LENGTH_LONG).show()
+//            }else{
+//                CONTACT_NUMBERS.add(edt_signup3ContactNumber.text.toString().trim().toInt())
+//            }
+
+            //popup the emergency contacts
+            var dialog: Dialog?
+            var popupView = LayoutInflater.from(this).inflate(R.layout.popup_emergency_contacts, null)
+            var arrayList = ArrayList<Long>()
+
+            var popupEditTextPhoneNumber = popupView.editText_popupEmergencyContactsPhoneNumber
+            var popupButtonAdd = popupView.button_popupEmergencyContactsAdd
+            var popupListView = popupView.listView_popupEmergencyContactsPhoneNumberList
+
+            popupButtonAdd.setOnClickListener {
+                if(!popupEditTextPhoneNumber.text.toString().trim().isNullOrEmpty()){
+                    arrayList.add(popupEditTextPhoneNumber.text.toString().trim().toLong())
+
+                    var database = FirebaseFirestore.getInstance()
+                        .collection("Client")
+                        .document(mCurrentUser!!.uid)
+
+                    //update the current list
+                    database.update("user_emergencyContacts", FieldValue.arrayUnion(popupEditTextPhoneNumber.text.toString().trim().toLong()))
+                        .addOnCompleteListener {
+                            task: Task<Void> ->
+                            if (task.isSuccessful){
+                                //get the contacts list
+                                database.get()
+                                    .addOnCompleteListener {
+                                            task: Task<DocumentSnapshot> ->
+                                        if(task.isSuccessful){
+                                            val user1 = task.result!!.toObject(User::class.java)
+                                            var arrayListUser = user1!!.user_emergencyContacts
+
+                                            if (arrayListUser != null) {
+                                                var adapter = ArrayAdapter<Long>(
+                                                    this,
+                                                    R.layout.row_simple_text,
+                                                    R.id.textView_rowSimpleTextText,
+                                                    arrayListUser
+                                                )
+                                                popupListView.adapter = adapter
+                                                fillUpListView()//update the list on the main activity
+                                            }
+                                        }
+                                    }
+                            }else{
+                                var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+                                alertDialog.setMessage("That contact number is already in the list")
+                                alertDialog.setTitle("DUPLICATE CONTACT NUMBER")
+                                alertDialog.show()
+                            }
+                        }
+
+                }
             }
+
+            dialog = Dialog(this)
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(popupView)
+            dialog.show()
         }
 
         btn_signup3CreateAccount.setOnClickListener {
-            if (CONTACT_NUMBERS.size == 0){
+            if (listView_signup3EmergencyContacts.adapter.count == 0){
                 Toast.makeText(this, "Sorry, but you need to at least one valid emergency contact", Toast.LENGTH_LONG).show()
             }else{
-                mDatabase = FirebaseDatabase.getInstance().reference.child("Emergency_Contacts").child(user.user_id!!)
-                mDatabase!!.setValue(CONTACT_NUMBERS).addOnSuccessListener {
-                    var dashboardActivity = Intent(this, DashboardActivity::class.java)
-                    startActivity(dashboardActivity)
-                }
+                var dashboardActivity = Intent(this, DashboardActivity::class.java)
+                startActivity(dashboardActivity)
             }
         }
 
-//        img_signup3UserPicture.setOnClickListener {
-//            var gallerIntent = Intent()
-//            gallerIntent.type = "image/*"
-//            gallerIntent.action = Intent.ACTION_GET_CONTENT
-//            startActivityForResult(Intent.createChooser(gallerIntent, "Select Image"), GALLERY_ID)
-//        }
+        img_signup3UserPicture.setOnClickListener {
+            var gallerIntent = Intent()
+            gallerIntent.type = "image/*"
+            gallerIntent.action = Intent.ACTION_GET_CONTENT
+            startActivityForResult(Intent.createChooser(gallerIntent, "Select Image"), GALLERY_ID)
+        }
+    }
+
+    private fun fillUpListView() {
+        var database = FirebaseFirestore.getInstance()
+            .collection("Client")
+            .document(mCurrentUser!!.uid)
+
+        //get the contacts list
+        database.get()
+            .addOnCompleteListener {
+                task: Task<DocumentSnapshot> ->
+                if(task.isSuccessful){
+                    val user = task.result!!.toObject(User::class.java)
+                    var arrayList = user!!.user_emergencyContacts
+
+                    if (arrayList != null) {
+                        var adapter = ArrayAdapter<Long>(
+                            this,
+                            R.layout.row_simple_text,
+                            R.id.textView_rowSimpleTextText,
+                            arrayList
+                        )
+                        listView_signup3EmergencyContacts.adapter = adapter
+                    }
+
+                }
+            }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
         val progress = ProgressDialog(this)
 
         if (requestCode == GALLERY_ID && resultCode == Activity.RESULT_OK) {
@@ -95,7 +190,8 @@ class Signup3Activity : AppCompatActivity() {
                 mCurrentUser = FirebaseAuth.getInstance().currentUser
                 var userID = mCurrentUser!!.uid
 
-                mDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userID).child("user_profPic")
+//                var database = FirebaseDatabase.getInstance().reference.child("Users").child(userID).child("user_profPic")
+                var database = FirebaseFirestore.getInstance().collection("Client").document(userID)
                 mStorage = FirebaseStorage.getInstance().reference
 
                 var thumbnailPath = mStorage!!.child("user_profPic").child("$userID.jpg")
@@ -113,7 +209,11 @@ class Signup3Activity : AppCompatActivity() {
                         task ->
                     if(task.isSuccessful){
                         val downloadUri = task.result
-                        mDatabase!!.setValue(downloadUri.toString()).addOnCompleteListener { task: Task<Void> ->
+                        var userAddedDetails = HashMap<String, String>()
+                        userAddedDetails["user_profilePictureURL"] = downloadUri.toString()
+
+                        database.update(userAddedDetails as Map<String, Any>).addOnCompleteListener {
+                            task: Task<Void> ->
                             if (task.isSuccessful) {
                                 //loading end
                                 progress.dismiss()
@@ -125,7 +225,18 @@ class Signup3Activity : AppCompatActivity() {
                                 Toast.makeText(applicationContext, "Upload error", Toast.LENGTH_LONG).show()
                             }
                         }
-
+//                        mDatabase!!.setValue(downloadUri.toString()).addOnCompleteListener { task: Task<Void> ->
+//                            if (task.isSuccessful) {
+//                                //loading end
+//                                progress.dismiss()
+//                                Picasso.get().load(downloadUri.toString()).into(img_signup3UserPicture)
+//                            }
+//                            else{
+//                                //loading end
+//                                progress.dismiss()
+//                                Toast.makeText(applicationContext, "Upload error", Toast.LENGTH_LONG).show()
+//                            }
+//                        }
                     }else{
                         //loading end
                         progress.dismiss()

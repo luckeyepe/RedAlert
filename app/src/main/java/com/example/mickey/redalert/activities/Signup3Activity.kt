@@ -1,16 +1,13 @@
 package com.example.mickey.redalert.activities
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -20,9 +17,6 @@ import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,9 +31,7 @@ import kotlinx.android.synthetic.main.popup_emergency_contacts.view.*
 
 class Signup3Activity : AppCompatActivity() {
     private var mCurrentUser: FirebaseUser?= null
-    private var mDatabase: DocumentReference?= null
     private var mAuth: FirebaseAuth?=null
-    private var CONTACT_NUMBERS = ArrayList<Int>(0)
     var GALLERY_ID: Int = 1
     var mStorage: StorageReference? = null
 
@@ -56,12 +48,6 @@ class Signup3Activity : AppCompatActivity() {
         fillUpListView()
 
         btn_signup3AddPhoneNumber.setOnClickListener {
-//            if (edt_signup3ContactNumber.text.toString().trim().isNullOrEmpty()){
-//                Toast.makeText(this, "Sorry, but you need to fill in a valid emergency contact", Toast.LENGTH_LONG).show()
-//            }else{
-//                CONTACT_NUMBERS.add(edt_signup3ContactNumber.text.toString().trim().toInt())
-//            }
-
             //popup the emergency contacts
             var dialog: Dialog?
             var popupView = LayoutInflater.from(this).inflate(R.layout.popup_emergency_contacts, null)
@@ -190,7 +176,6 @@ class Signup3Activity : AppCompatActivity() {
                 mCurrentUser = FirebaseAuth.getInstance().currentUser
                 var userID = mCurrentUser!!.uid
 
-//                var database = FirebaseDatabase.getInstance().reference.child("Users").child(userID).child("user_profPic")
                 var database = FirebaseFirestore.getInstance().collection("Client").document(userID)
                 mStorage = FirebaseStorage.getInstance().reference
 
@@ -225,18 +210,6 @@ class Signup3Activity : AppCompatActivity() {
                                 Toast.makeText(applicationContext, "Upload error", Toast.LENGTH_LONG).show()
                             }
                         }
-//                        mDatabase!!.setValue(downloadUri.toString()).addOnCompleteListener { task: Task<Void> ->
-//                            if (task.isSuccessful) {
-//                                //loading end
-//                                progress.dismiss()
-//                                Picasso.get().load(downloadUri.toString()).into(img_signup3UserPicture)
-//                            }
-//                            else{
-//                                //loading end
-//                                progress.dismiss()
-//                                Toast.makeText(applicationContext, "Upload error", Toast.LENGTH_LONG).show()
-//                            }
-//                        }
                     }else{
                         //loading end
                         progress.dismiss()

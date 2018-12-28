@@ -63,7 +63,7 @@ class SignupActivity : AppCompatActivity() {
 
 
                 user.user_birthDate = timeStampDate
-                user.user_contactNumber = edt_signupContactNumber.text.toString().trim().toLong()
+                user.user_contactNumber = edt_signupContactNumber.text.toString().trim()
                 user.user_profilePictureURL = "default"
                 var password = edt_signupPassword.text.toString().trim()
 

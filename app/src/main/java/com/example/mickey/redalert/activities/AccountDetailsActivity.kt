@@ -77,7 +77,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                         val arrayList = user.user_emergencyContacts
 
                         if (arrayList != null) {
-                            val adapter = ArrayAdapter<Long>(
+                            val adapter = ArrayAdapter<String>(
                                 this,
                                 R.layout.row_simple_text,
                                 R.id.textView_rowSimpleTextText,

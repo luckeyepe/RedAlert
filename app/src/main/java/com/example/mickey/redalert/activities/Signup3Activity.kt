@@ -51,7 +51,7 @@ class Signup3Activity : AppCompatActivity() {
             //popup the emergency contacts
             var dialog: Dialog?
             var popupView = LayoutInflater.from(this).inflate(R.layout.popup_emergency_contacts, null)
-            var arrayList = ArrayList<Long>()
+            var arrayList = ArrayList<String>()
 
             var popupEditTextPhoneNumber = popupView.editText_popupEmergencyContactsPhoneNumber
             var popupButtonAdd = popupView.button_popupEmergencyContactsAdd
@@ -60,11 +60,11 @@ class Signup3Activity : AppCompatActivity() {
             popupButtonAdd.setOnClickListener {
                 if(!popupEditTextPhoneNumber.text.toString().trim().isNullOrEmpty()){
 
-                    if (popupEditTextPhoneNumber.text.toString().trim().length < 11) {
+                    if (popupEditTextPhoneNumber.text.toString().trim().length == 11) {
 
-                        if (arrayList.contains(popupEditTextPhoneNumber.text.toString().trim().toLong())) {
+                        if (!arrayList.contains(popupEditTextPhoneNumber.text.toString().trim())) {
 
-                            arrayList.add(popupEditTextPhoneNumber.text.toString().trim().toLong())
+                            arrayList.add(popupEditTextPhoneNumber.text.toString().trim())
                             var database = FirebaseFirestore.getInstance()
                                 .collection("Client")
                                 .document(mCurrentUser!!.uid)
@@ -72,7 +72,7 @@ class Signup3Activity : AppCompatActivity() {
                             //update the current list
                             database.update(
                                 "user_emergencyContacts",
-                                FieldValue.arrayUnion(popupEditTextPhoneNumber.text.toString().trim().toLong())
+                                FieldValue.arrayUnion(popupEditTextPhoneNumber.text.toString().trim())
                             )
                                 .addOnCompleteListener { task: Task<Void> ->
                                     if (task.isSuccessful) {
@@ -84,7 +84,7 @@ class Signup3Activity : AppCompatActivity() {
                                                     var arrayListUser = user1!!.user_emergencyContacts
 
                                                     if (arrayListUser != null) {
-                                                        var adapter = ArrayAdapter<Long>(
+                                                        var adapter = ArrayAdapter<String>(
                                                             this,
                                                             R.layout.row_simple_text,
                                                             R.id.textView_rowSimpleTextText,
@@ -151,7 +151,7 @@ class Signup3Activity : AppCompatActivity() {
                     var arrayList = user!!.user_emergencyContacts
 
                     if (arrayList != null) {
-                        var adapter = ArrayAdapter<Long>(
+                        var adapter = ArrayAdapter<String>(
                             this,
                             R.layout.row_simple_text,
                             R.id.textView_rowSimpleTextText,

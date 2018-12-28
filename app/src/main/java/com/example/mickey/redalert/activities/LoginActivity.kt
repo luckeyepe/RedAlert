@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener {
                     task: Task<AuthResult> ->
                 if (task.isSuccessful){
-                    var dashboardIntent = Intent(this, DashboardActivity::class.java)
+                    var dashboardIntent = Intent(this, DashboardActivityJava::class.java)
                     startActivity(dashboardIntent)
                     finish()
                 }else{

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 import com.example.mickey.redalert.R;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -15,6 +16,7 @@ public class DashboardActivityJava extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        Toast.makeText(this, "JAVA dashboard", Toast.LENGTH_LONG).show();
 
     }
 
@@ -27,26 +29,31 @@ public class DashboardActivityJava extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
         if(item != null){
             switch (item.getItemId()){
                 case R.id.item_menuAccount: {
-                    Intent intent = new Intent(this, AccountDetails.class);
+                    Intent intent = new Intent(this, AccountDetailsActivity.class);
                     startActivity(intent);
+                    break;
                 }
+
                 case R.id.item_menuMessages: {
-//                    Intent intent = new Intent(this, AccountDetails.class);
+//                    Intent intent = new Intent(this, AccountDetailsActivity.class);
 //                    startActivity(intent);
                 }
+
                 case R.id.item_menuLogout: {
                     FirebaseAuth.getInstance().signOut();
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
                     finish();
+                    break;
                 }
             }
         }
 
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 }

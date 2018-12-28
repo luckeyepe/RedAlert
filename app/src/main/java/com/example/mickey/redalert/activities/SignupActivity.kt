@@ -26,9 +26,6 @@ import java.time.format.DateTimeFormatter
 import java.text.DateFormat
 import android.widget.DatePicker
 
-
-
-
 class SignupActivity : AppCompatActivity() {
     val TAG = "SignupActivity"
     private var mAuth: FirebaseAuth?= null

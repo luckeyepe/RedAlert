@@ -59,45 +59,58 @@ class Signup3Activity : AppCompatActivity() {
 
             popupButtonAdd.setOnClickListener {
                 if(!popupEditTextPhoneNumber.text.toString().trim().isNullOrEmpty()){
-                    arrayList.add(popupEditTextPhoneNumber.text.toString().trim().toLong())
 
-                    var database = FirebaseFirestore.getInstance()
-                        .collection("Client")
-                        .document(mCurrentUser!!.uid)
+                    if (popupEditTextPhoneNumber.text.toString().trim().length < 11) {
 
-                    //update the current list
-                    database.update("user_emergencyContacts", FieldValue.arrayUnion(popupEditTextPhoneNumber.text.toString().trim().toLong()))
-                        .addOnCompleteListener {
-                            task: Task<Void> ->
-                            if (task.isSuccessful){
-                                //get the contacts list
-                                database.get()
-                                    .addOnCompleteListener {
-                                            task: Task<DocumentSnapshot> ->
-                                        if(task.isSuccessful){
-                                            val user1 = task.result!!.toObject(User::class.java)
-                                            var arrayListUser = user1!!.user_emergencyContacts
+                        if (arrayList.contains(popupEditTextPhoneNumber.text.toString().trim().toLong())) {
 
-                                            if (arrayListUser != null) {
-                                                var adapter = ArrayAdapter<Long>(
-                                                    this,
-                                                    R.layout.row_simple_text,
-                                                    R.id.textView_rowSimpleTextText,
-                                                    arrayListUser
-                                                )
-                                                popupListView.adapter = adapter
-                                                fillUpListView()//update the list on the main activity
+                            arrayList.add(popupEditTextPhoneNumber.text.toString().trim().toLong())
+                            var database = FirebaseFirestore.getInstance()
+                                .collection("Client")
+                                .document(mCurrentUser!!.uid)
+
+                            //update the current list
+                            database.update(
+                                "user_emergencyContacts",
+                                FieldValue.arrayUnion(popupEditTextPhoneNumber.text.toString().trim().toLong())
+                            )
+                                .addOnCompleteListener { task: Task<Void> ->
+                                    if (task.isSuccessful) {
+                                        //get the contacts list
+                                        database.get()
+                                            .addOnCompleteListener { task: Task<DocumentSnapshot> ->
+                                                if (task.isSuccessful) {
+                                                    val user1 = task.result!!.toObject(User::class.java)
+                                                    var arrayListUser = user1!!.user_emergencyContacts
+
+                                                    if (arrayListUser != null) {
+                                                        var adapter = ArrayAdapter<Long>(
+                                                            this,
+                                                            R.layout.row_simple_text,
+                                                            R.id.textView_rowSimpleTextText,
+                                                            arrayListUser
+                                                        )
+                                                        popupListView.adapter = adapter
+                                                        fillUpListView()//update the list on the main activity
+                                                    }
+                                                }
                                             }
-                                        }
                                     }
-                            }else{
-                                var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
-                                alertDialog.setMessage("That contact number is already in the list")
-                                alertDialog.setTitle("DUPLICATE CONTACT NUMBER")
-                                alertDialog.show()
-                            }
+                                }
+                        }else{
+                            //todo popup error that contact number already exists
+                            var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+                            alertDialog.setMessage("That contact number is already in the list")
+                            alertDialog.setTitle("DUPLICATE CONTACT NUMBER")
+                            alertDialog.show()
                         }
-
+                    }else{
+                        //todo popup error contact number is to short
+                        var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+                        alertDialog.setMessage("That contact number is not valid")
+                        alertDialog.setTitle("INVALID CONTACT NUMBER")
+                        alertDialog.show()
+                    }
                 }
             }
 

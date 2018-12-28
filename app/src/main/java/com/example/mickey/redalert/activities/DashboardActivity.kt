@@ -283,7 +283,7 @@ class DashboardActivity : AppCompatActivity() {
 
                 R.id.item_menuAccount -> {
                     //opens settingsActivities
-                    startActivity(Intent(this, SettingsActivity::class.java))
+                    startActivity(Intent(this, AccountDetailsActivity::class.java))
                 }
             }
         }

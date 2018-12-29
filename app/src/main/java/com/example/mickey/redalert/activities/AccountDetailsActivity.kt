@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.activity_account_details.*
 import kotlinx.android.synthetic.main.popup_allergy_update.view.*
 import kotlinx.android.synthetic.main.popup_blood_type.view.*
 import kotlinx.android.synthetic.main.popup_change_password.view.*
+import kotlinx.android.synthetic.main.popup_emergency_contacts_update.view.*
 import kotlinx.android.synthetic.main.popup_update_account_details_part_1.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -607,6 +608,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                 }
             }
 
+
             //popup edit allergies
             popupImageViewEditAllergies.setOnClickListener {
                 //todo popup edit allergies
@@ -645,8 +647,10 @@ class AccountDetailsActivity : AppCompatActivity() {
                                 popupListView.setOnItemClickListener { parent, view, position, id ->
                                     var alertDialog = AlertDialog.Builder(this)
                                     alertDialog.setIcon(R.drawable.ic_info_black_24dp)
-                                    alertDialog.setMessage("Do you want to delete \n" +
-                                            "'${popupListView.getItemAtPosition(position)}' from your allergies? ")
+                                    alertDialog.setMessage(
+                                        "Do you want to delete \n" +
+                                                "'${popupListView.getItemAtPosition(position)}' from your allergies? "
+                                    )
                                     alertDialog.setTitle("CONFIRM DELETE!")
                                     alertDialog.setCancelable(false)
 
@@ -665,75 +669,24 @@ class AccountDetailsActivity : AppCompatActivity() {
 
                                     }
 
-                                    alertDialog.setNegativeButton("No!"){ dialog, which ->
+                                    alertDialog.setNegativeButton("No!") { dialog, which ->
                                         dialog.dismiss()
 
                                     }
 
                                     alertDialog.show()
-                                    Toast.makeText(this, "${popupListView.getItemAtPosition(position)}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this,
+                                        "${popupListView.getItemAtPosition(position)}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
-
-
                         }else{
                         Log.e(TAG, firebaseFirestoreException.toString())
                     }
 
                 }
-//                    .addOnCompleteListener {
-//                        task: Task<DocumentSnapshot> ->
-//                        if (task.isSuccessful){
-//                            val arrayListAllergy = task.result!!.get("user_allergies") as ArrayList<String>
-//
-//                            if (arrayListAllergy != null) {
-//                                val adapter = ArrayAdapter<String>(
-//                                    this,
-//                                    R.layout.row_simple_text,
-//                                    R.id.textView_rowSimpleTextText,
-//                                    arrayListAllergy
-//                                )
-//                                popupListView.adapter = adapter
-//
-//
-//                                //allows list to open
-//                                popupListView.setOnItemClickListener { parent, view, position, id ->
-//                                    var alertDialog = AlertDialog.Builder(this)
-//                                    alertDialog.setIcon(R.drawable.ic_info_black_24dp)
-//                                    alertDialog.setMessage("Do you want to delete \n" +
-//                                            "'${popupListView.getItemAtPosition(position)}' from your allergies? ")
-//                                    alertDialog.setTitle("CONFIRM DELETE!")
-//                                    alertDialog.setCancelable(false)
-//
-//                                    alertDialog.setPositiveButton("OK") { dialog, which ->
-//                                        arrayListAllergy.removeAt(position)
-//
-//                                        val adapter = ArrayAdapter<String>(
-//                                            this,
-//                                            R.layout.row_simple_text,
-//                                            R.id.textView_rowSimpleTextText,
-//                                            arrayListAllergy
-//                                        )
-//                                        popupListView.adapter = adapter
-//
-//                                        database.update("user_allergies", arrayListAllergy)
-//
-//                                    }
-//
-//                                    alertDialog.setNegativeButton("No!"){ dialog, which ->
-//                                        dialog.dismiss()
-//
-//                                    }
-//
-//                                    alertDialog.show()
-//                                    Toast.makeText(this, "${popupListView.getItemAtPosition(position)}", Toast.LENGTH_SHORT).show()
-//                                }
-//                            }
-//
-//
-//                        }
-//
-//                    }
 
                 dialogAllergyUpdate = Dialog(this)
                 dialogAllergyUpdate.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -742,7 +695,6 @@ class AccountDetailsActivity : AppCompatActivity() {
                 dialogAllergyUpdate.show()
 
                 popupButtonCancel.setOnClickListener {
-                    val arrayListFinalAllergies =
                     dialogAllergyUpdate.dismiss()
                 }
                 popupButtonAdd.setOnClickListener {
@@ -774,23 +726,6 @@ class AccountDetailsActivity : AppCompatActivity() {
                                 Log.e(TAG, task.exception.toString())
                             }
                         }
-
-//                            { documentSnapshot, firebaseFirestoreException ->
-//                            if (documentSnapshot!=null) {
-//                                val arrayListAllergy = documentSnapshot.get("user_allergies") as ArrayList<String>
-//
-//                                if (arrayListAllergy != null) {
-//                                    if (arrayListAllergy.contains(allergy)){
-//                                        errorDialog("'$allergy' is already in the\n Allergy List!",
-//                                            "DUPLICATE ENTRY!")
-//                                    }else
-//                                    {
-//                                        database.update("user_allergies", FieldValue.arrayUnion(allergy))
-//                                    }
-//
-//                                }
-//                            }
-//                        }
                     }
 
                 }
@@ -804,11 +739,130 @@ class AccountDetailsActivity : AppCompatActivity() {
                 var dialogEmergencyContacts: Dialog?
                 var popupView = LayoutInflater.from(this).inflate(R.layout.popup_emergency_contacts_update, null)
 
+                //////////////////////////////////////////////
+                val popupEditTextContact = popupView.editText_popupEmergencyContactsUpdateContactNumber
+                val popupButtonAdd = popupView.button_popupEmergencyContactsUpdateAdd
+                val popupButtonCancel = popupView.button_popupEmergencyContactsUpdateCancel
+                val popupListView = popupView.listView_popupEmergencyContactsUpdateList
+
+                //fill in data
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                val database = FirebaseFirestore.getInstance()
+                    .collection("Client")
+                    .document("${currentUser!!.uid}")
+
+                database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                    if (documentSnapshot!=null)
+                    {
+//                        val user = documentSnapshot.toObject(com.example.mickey.redalert.models.User::class.java)
+                        val arrayListContacts = documentSnapshot.get("user_emergencyContacts") as ArrayList<String>
+
+                        if (arrayListContacts != null) {
+                            val adapter = ArrayAdapter<String>(
+                                this,
+                                R.layout.row_simple_text,
+                                R.id.textView_rowSimpleTextText,
+                                arrayListContacts
+                            )
+                            popupListView.adapter = adapter
+
+
+                            //allows list to open
+                            popupListView.setOnItemClickListener { parent, view, position, id ->
+                                var alertDialog = AlertDialog.Builder(this)
+                                alertDialog.setIcon(R.drawable.ic_info_black_24dp)
+                                alertDialog.setMessage(
+                                    "Do you want to delete \n" +
+                                            "'${popupListView.getItemAtPosition(position)}' from your contacts? "
+                                )
+                                alertDialog.setTitle("CONFIRM DELETE!")
+                                alertDialog.setCancelable(false)
+
+                                alertDialog.setPositiveButton("OK") { dialog, which ->
+                                    arrayListContacts.removeAt(position)
+
+                                    val adapter = ArrayAdapter<String>(
+                                        this,
+                                        R.layout.row_simple_text,
+                                        R.id.textView_rowSimpleTextText,
+                                        arrayListContacts
+                                    )
+                                    popupListView.adapter = adapter
+
+                                    database.update("user_emergencyContacts", arrayListContacts)
+
+                                }
+
+                                alertDialog.setNegativeButton("No!") { dialog, which ->
+                                    dialog.dismiss()
+
+                                }
+
+                                alertDialog.show()
+                                Toast.makeText(
+                                    this,
+                                    "${popupListView.getItemAtPosition(position)}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }else{
+                        Log.e(TAG, firebaseFirestoreException.toString())
+                    }
+
+                }
+                //////////////////////////////////////////////
+
                 dialogEmergencyContacts = Dialog(this)
                 dialogEmergencyContacts.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialogEmergencyContacts.setContentView(popupView)
                 dialogEmergencyContacts.setCancelable(false)
                 dialogEmergencyContacts.show()
+
+                popupButtonCancel.setOnClickListener {
+                        dialogEmergencyContacts.dismiss()
+                }
+                popupButtonAdd.setOnClickListener {
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    val database = FirebaseFirestore.getInstance()
+                        .collection("Client")
+                        .document("${currentUser!!.uid}")
+                    val contactNumber = popupEditTextContact.text.toString().trim()
+
+                    if (contactNumber.isNullOrEmpty())
+                    {
+                        errorDialog("Please Enter Contact Number!", "MISSING DATA!")
+                    }else {
+                        if (contactNumber.length == 11) {
+                            database.get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
+                                if (task.isSuccessful) {
+                                    //do
+                                    val arrayListAllergy =
+                                        task.result!!.get("user_emergencyContacts") as ArrayList<String>
+                                    if (arrayListAllergy != null) {
+                                        if (arrayListAllergy.contains(contactNumber)) {
+                                            errorDialog(
+                                                "'$contactNumber' is already in the\n Contact List!",
+                                                "DUPLICATE ENTRY!"
+                                            )
+                                        } else {
+                                            database.update(
+                                                "user_emergencyContacts",
+                                                FieldValue.arrayUnion(contactNumber)
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    Log.e(TAG, task.exception.toString())
+                                }
+                            }
+                        }else{
+                            errorDialog("Emergency Contact Number should be at least 11 digits long!! ",
+                                "INVALID CONTACT NUMBER")
+                        }
+                    }
+
+                }
             }
 
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

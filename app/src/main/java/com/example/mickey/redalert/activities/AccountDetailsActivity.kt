@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
 import android.widget.ArrayAdapter
-import android.widget.RadioGroup
 import android.widget.Toast
 import com.example.mickey.redalert.R
 import com.example.mickey.redalert.models.User
@@ -29,8 +28,6 @@ import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_account_details.*
-import kotlinx.android.synthetic.main.activity_signup.*
-import kotlinx.android.synthetic.main.activity_signup2.*
 import kotlinx.android.synthetic.main.popup_blood_type.view.*
 import kotlinx.android.synthetic.main.popup_change_password.view.*
 import kotlinx.android.synthetic.main.popup_update_account_details_part_1.view.*
@@ -237,6 +234,8 @@ class AccountDetailsActivity : AppCompatActivity() {
             var popupListViewAllergies = popupView.listView_popupUpdateAccountDetailsAllergies
             var popupButtonCancel = popupView.button_popupUpdateAccountDetailsCancel
             var popupButtonUpdate = popupView.button_popupUpdateAccountDetailsUpdate
+            var popupImageViewEditAllergies = popupView.imageView_popupUpdateAccountDetailsEditAllergies
+            var popupImageViewEditEmergencyContacts = popupView.imageView_popupUpdateAccountDetailsEditEmergencyContacts
 
             popupEditTextBirthDate.isFocusable = false
             popupEditTextBirthDate.isClickable = true
@@ -446,7 +445,6 @@ class AccountDetailsActivity : AppCompatActivity() {
                     }
                 }
 
-
                 dialogBloodType = Dialog(this)
                 dialogBloodType.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialogBloodType.setContentView(popupView)
@@ -456,6 +454,27 @@ class AccountDetailsActivity : AppCompatActivity() {
                 popupButtonOK.setOnClickListener {
                     dialogBloodType.dismiss()
                 }
+            }
+
+            //popup edit allergies
+            popupImageViewEditAllergies.setOnClickListener {
+                //todo popup edit allergies
+                Toast.makeText(this, "Popup Edit Allergies", Toast.LENGTH_SHORT).show()
+
+            }
+
+            //popup edit emergency contacts
+            popupImageViewEditEmergencyContacts.setOnClickListener {
+                //todo popup edit emergency contacts
+                Toast.makeText(this, "Popup edit contacts", Toast.LENGTH_SHORT).show()
+                var dialogEmergencyContacts: Dialog?
+                var popupView = LayoutInflater.from(this).inflate(R.layout.popup_emergency_contacts_update, null)
+
+                dialogEmergencyContacts = Dialog(this)
+                dialogEmergencyContacts.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialogEmergencyContacts.setContentView(popupView)
+                dialogEmergencyContacts.setCancelable(false)
+                dialogEmergencyContacts.show()
             }
 
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

@@ -53,7 +53,7 @@ class Signup3Activity : AppCompatActivity() {
             var popupView = LayoutInflater.from(this).inflate(R.layout.popup_emergency_contacts, null)
             var arrayList = ArrayList<String>()
 
-            var popupEditTextPhoneNumber = popupView.editText_popupEmergencyContactsPhoneNumber
+            var popupEditTextPhoneNumber = popupView.editText_popupEmergencyContactsContactNumber
             var popupButtonAdd = popupView.button_popupEmergencyContactsAdd
             var popupListView = popupView.listView_popupEmergencyContactsPhoneNumberList
 

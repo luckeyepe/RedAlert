@@ -1,24 +1,146 @@
 package com.example.mickey.redalert.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import com.example.mickey.redalert.R;
+import com.example.mickey.redalert.current_location_map_fragment;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class DashboardActivityJava extends AppCompatActivity {
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
+public class DashboardActivityJava extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+
+    Button btn_dashboardEmergency;
+    FirebaseFirestore db;
+    FirebaseUser user;
+    String messageToSendEmergency = "";
+    String phoneNumberToSend= "";
+    public final static int SEND_SMS_PREMISSION_REQUEST_CODE =111 ;
+
+    private GoogleMap mMap;
+    GoogleApiClient client;
+    LocationRequest request;
+    LocationManager locationManager;
+    LocationListener locationListener;
+    private FusedLocationProviderClient clientLocation;
+    LatLng latLngCurrent;
+    Location currentLocation;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        Toast.makeText(this, "JAVA dashboard", Toast.LENGTH_LONG).show();
-
+        refs();
+        btn_dashboardEmergency.setOnClickListener(reportEmergency);
     }
+
+    private View.OnClickListener reportEmergency = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+            startActivity(intent);
+           /* if(checkPermission(Manifest.permission.SEND_SMS)){
+
+
+                user = FirebaseAuth.getInstance().getCurrentUser();
+
+                db = FirebaseFirestore.getInstance();
+                db.collection("Client").document("" + user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                ArrayList<String> list = new ArrayList<String>();
+                                list=(ArrayList<String>)document.get("user_emergencyContacts");
+
+                              for(int counter=0;counter<list.size();counter++)
+                              {
+                                  Log.e("CURRENT LOCATION", "" + currentLocation.toString());
+                                  //Log.e(" CONTAIN", list.toString());
+                                  messageToSendEmergency="I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY!";
+                                  phoneNumberToSend=list.get(counter);
+                                  SmsManager smsManager = SmsManager.getDefault();
+                                  smsManager.sendTextMessage(phoneNumberToSend,null,messageToSendEmergency,null,null);
+                              }
+
+                            }
+
+                            else
+                            {
+                                Log.e("DOES NOT CONTAIN", "NOT FOUND!");
+                               // Toast.makeText(DashboardActivity.this, "STUDENT NOT FOUND!",
+                                      //  Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+
+
+            }
+            else{
+                ActivityCompat.requestPermissions(DashboardActivityJava.this,new String[]{Manifest.permission.SEND_SMS},SEND_SMS_PREMISSION_REQUEST_CODE);
+
+            }*/
+        }
+    };
+
+
+    private boolean checkPermission(String permission)
+    {
+        int checkPermission = ContextCompat.checkSelfPermission(this,permission);
+        return checkPermission == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        // super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+
+        switch(requestCode){
+            case SEND_SMS_PREMISSION_REQUEST_CODE :
+                if(grantResults.length>0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                    if(ContextCompat.checkSelfPermission(DashboardActivityJava.this,Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
+                        Toast.makeText(getApplication(), "PERMISSION GRANTED! ", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    Toast.makeText(getApplication(), "NO PERMISSION GRANTED! ", Toast.LENGTH_SHORT).show();
+                }
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -29,8 +151,6 @@ public class DashboardActivityJava extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-
         if(item != null){
             switch (item.getItemId()){
                 case R.id.item_menuAccount: {
@@ -40,7 +160,7 @@ public class DashboardActivityJava extends AppCompatActivity {
                 }
 
                 case R.id.item_menuMessages: {
-//                    Intent intent = new Intent(this, AccountDetailsActivity.class);
+//                    Intent intent = new Intent(this, AccountDetails.class);
 //                    startActivity(intent);
                 }
 
@@ -53,7 +173,72 @@ public class DashboardActivityJava extends AppCompatActivity {
                 }
             }
         }
+        return super.onOptionsItemSelected(item);
+    }
 
-        return true;
+    public void refs()
+    {
+        btn_dashboardEmergency=findViewById(R.id.btn_dashboardEmergency);
+    }
+
+
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        request = new LocationRequest().create();
+        request.setInterval(1000);
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(client, request, this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (location == null) {
+            Log.e("ERROR", "NO LOCATION");
+        } else {
+            //GET CURRENT LOCATION OF USER / CLIENT
+            LatLng latLngCurrent = new LatLng(location.getLatitude(), location.getLongitude());
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLngCurrent, 15);
+            mMap.animateCamera(update);
+            currentLocation=location;
+            // Log.e("LOCATION OF CLIENT!!","" + latLngCurrent.toString());
+           /* MarkerOptions options = new MarkerOptions();
+            options.position(latLngCurrent);
+            options.title("Current Location");
+            mMap.addMarker(options);*/
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        client = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        client.connect();
+
     }
 }

@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -56,12 +57,9 @@ class AccountDetailsActivity : AppCompatActivity() {
         progress.setCancelable(false) // disable dismiss by tapping outside of the dialog
         progress.show()
 
-        database.get()
-            .addOnCompleteListener {
-                task: Task<DocumentSnapshot> ->
-                if (task.isSuccessful){
-                    val user = task.result!!.toObject(com.example.mickey.redalert.models.User::class.java)
-
+        database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+            if (documentSnapshot != null){
+                val user = documentSnapshot.toObject(com.example.mickey.redalert.models.User::class.java)
                     if (user!=null) {
                         //occupy textviews
                         textView_accountDetailsBloodType.text = user.user_bloodType
@@ -123,9 +121,78 @@ class AccountDetailsActivity : AppCompatActivity() {
                     }
 
                 }else{
-                    //todo popup error that no data exists
-                }
+                Log.e(TAG, firebaseFirestoreException.toString())
             }
+        }
+//            .addOnCompleteListener {
+//                task: Task<DocumentSnapshot> ->
+//                if (task.isSuccessful){
+//                    val user = task.result!!.toObject(com.example.mickey.redalert.models.User::class.java)
+//
+//                    if (user!=null) {
+//                        //occupy textviews
+//                        textView_accountDetailsBloodType.text = user.user_bloodType
+//
+//                        if (user.user_gender == "M") {
+//                            textView_accountDetailsGender.text = "Male"
+//                        } else {
+//                            textView_accountDetailsGender.text = "Female"
+//                        }
+//
+//                        if (user.user_isOrganDonor == true){
+//                            textView_accountDetailsIsOrganDonor.text = "Yes"
+//                        }else{
+//                            textView_accountDetailsIsOrganDonor.text = "No"
+//                        }
+//
+//                        textView_accountDetailsFullName.text = "${user.user_lastName}, ${user.user_firstName}"
+//                        textView_accountDetailsAddress.text = user.user_address
+//                        textView_accountDetailsContactNumber.text = user.user_contactNumber.toString()
+//                        var dateOfBirth = user.user_birthDate
+//                        val formatter = SimpleDateFormat("MM/dd/yyyy")
+//                        textView_accountDetailsDateOfBirth.text = formatter.format(dateOfBirth)
+//
+//                        //put emergency contacts into list view
+//                        val arrayList = user.user_emergencyContacts
+//
+//                        if (arrayList != null) {
+//                            val adapter = ArrayAdapter<String>(
+//                                this,
+//                                R.layout.row_simple_text,
+//                                R.id.textView_rowSimpleTextText,
+//                                arrayList
+//                            )
+//                            listView_accountDetailsEmergencyContacts.adapter = adapter
+//                        }
+//
+//                        //put allergies into list view
+//                        val arrayListAllergies = user.user_allergies
+//
+//                        if (arrayListAllergies != null) {
+//                            val adapter = ArrayAdapter<String>(
+//                                this,
+//                                R.layout.row_simple_text,
+//                                R.id.textView_rowSimpleTextText,
+//                                arrayListAllergies
+//                            )
+//                            listView_accountDetailsAllergies.adapter = adapter
+//                        }
+//
+//                        //load up user profile picture
+//                        if(user.user_profilePictureURL == "default"){
+//                            Picasso.get().load(R.drawable.default_avata)
+//                                .into(circleImageView_acountDetailsProfilePicture)
+//                        }else {
+//                            Picasso.get().load(user.user_profilePictureURL)
+//                                .into(circleImageView_acountDetailsProfilePicture)
+//                        }
+//                        progress.dismiss()
+//                    }
+//
+//                }else{
+//                    //todo popup error that no data exists
+//                }
+//            }
 
         //update profile picture
         circleImageView_acountDetailsProfilePicture.setOnClickListener {
@@ -248,90 +315,177 @@ class AccountDetailsActivity : AppCompatActivity() {
             val currentUser = FirebaseAuth.getInstance().currentUser
             val database = FirebaseFirestore.getInstance().collection("Client").document(currentUser!!.uid)
 
-            database.get()
-                .addOnCompleteListener {
-                task: Task<DocumentSnapshot> ->
-                    if (task.isSuccessful){
-                        val user = task.result!!.toObject(User::class.java)
+            database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+               if (documentSnapshot!=null)
+               {
+                   ///////////////////////////////////////////////////////////////
+                   val user = documentSnapshot.toObject(User::class.java)
 
-                        if (user!=null){
-                            popupEditTextLastName.setText(user.user_lastName)
-                            popupEditTextFirstName.setText(user.user_firstName)
-                            popupEditTextAddress.setText(user.user_address)
-                            popupEditTextContactNumber.setText(user.user_contactNumber)
+                   if (user!=null){
+                       popupEditTextLastName.setText(user.user_lastName)
+                       popupEditTextFirstName.setText(user.user_firstName)
+                       popupEditTextAddress.setText(user.user_address)
+                       popupEditTextContactNumber.setText(user.user_contactNumber)
 
-                            //date of birth
-                            var dateOfBirth = user.user_birthDate
-                            val formatter = SimpleDateFormat("MM/dd/yyyy")
-                            popupEditTextBirthDate.setText(formatter.format(dateOfBirth))
+                       //date of birth
+                       var dateOfBirth = user.user_birthDate
+                       val formatter = SimpleDateFormat("MM/dd/yyyy")
+                       popupEditTextBirthDate.setText(formatter.format(dateOfBirth))
 
-                            //gender
-                            if(user.user_gender == "M"){
-                                popupRadioButtonMale.isChecked = true
-                            }else{
-                                popupRadioButtonFemale.isChecked = true
-                            }
+                       //gender
+                       if(user.user_gender == "M"){
+                           popupRadioButtonMale.isChecked = true
+                       }else{
+                           popupRadioButtonFemale.isChecked = true
+                       }
 
-                            //organ donor
-                            if(user.user_isOrganDonor == true){
-                                popupRadioButtonYes.isChecked = true
-                            }else{
-                                popupRadioButtonNo.isChecked = true
-                            }
+                       //organ donor
+                       if(user.user_isOrganDonor == true){
+                           popupRadioButtonYes.isChecked = true
+                       }else{
+                           popupRadioButtonNo.isChecked = true
+                       }
 
-                            popupEditTextBloodType.setText(user.user_bloodType)
+                       popupEditTextBloodType.setText(user.user_bloodType)
 
-                            //put emergency contacts into list view
-                            val arrayList = user.user_emergencyContacts
+                       //put emergency contacts into list view
+                       val arrayList = user.user_emergencyContacts
 
-                            if (arrayList != null) {
-                                val adapter = ArrayAdapter<String>(
-                                    this,
-                                    R.layout.row_simple_text,
-                                    R.id.textView_rowSimpleTextText,
-                                    arrayList
-                                )
+                       if (arrayList != null) {
+                           val adapter = ArrayAdapter<String>(
+                               this,
+                               R.layout.row_simple_text,
+                               R.id.textView_rowSimpleTextText,
+                               arrayList
+                           )
 
-                                //dynamic change of listview hight
-                                if (arrayList.size > 1){
-                                    popupListViewEmergencyContacts.layoutParams.height = 95
-                                }
-                                popupListViewEmergencyContacts.adapter = adapter
-                            }
+                           //dynamic change of listview hight
+                           if (arrayList.size > 1){
+                               popupListViewEmergencyContacts.layoutParams.height = 95
+                           }
+                           popupListViewEmergencyContacts.adapter = adapter
+                       }
 
-                            //allows emergency listview to scroll
-                            popupListViewEmergencyContacts.setOnTouchListener { v, event ->
-                                v.parent.requestDisallowInterceptTouchEvent(true)
-                                return@setOnTouchListener false
-                            }
+                       //allows emergency listview to scroll
+                       popupListViewEmergencyContacts.setOnTouchListener { v, event ->
+                           v.parent.requestDisallowInterceptTouchEvent(true)
+                           return@setOnTouchListener false
+                       }
 
-                            //put allergies into list view
-                            val arrayListAllergies = user.user_allergies
+                       //put allergies into list view
+                       val arrayListAllergies = user.user_allergies
 
-                            if (arrayListAllergies != null) {
-                                val adapter = ArrayAdapter<String>(
-                                    this,
-                                    R.layout.row_simple_text,
-                                    R.id.textView_rowSimpleTextText,
-                                    arrayListAllergies
-                                )
+                       if (arrayListAllergies != null) {
+                           val adapter = ArrayAdapter<String>(
+                               this,
+                               R.layout.row_simple_text,
+                               R.id.textView_rowSimpleTextText,
+                               arrayListAllergies
+                           )
 
-                                //dynamic change of listview hight
-                                if (arrayListAllergies.size > 1){
-                                    popupListViewAllergies.layoutParams.height = 95
-                                }
-                                popupListViewAllergies.adapter = adapter
-                            }
+                           //dynamic change of listview hight
+                           if (arrayListAllergies.size > 1){
+                               popupListViewAllergies.layoutParams.height = 95
+                           }
+                           popupListViewAllergies.adapter = adapter
+                       }
 
-                            //allows emergency listview to scroll
-                            popupListViewAllergies.setOnTouchListener { v, event ->
-                                v.parent.requestDisallowInterceptTouchEvent(true)
-                                return@setOnTouchListener false
-                            }
-
-                        }
-                    }
+                       //allows emergency listview to scroll
+                       popupListViewAllergies.setOnTouchListener { v, event ->
+                           v.parent.requestDisallowInterceptTouchEvent(true)
+                           return@setOnTouchListener false
+                       }
+                   }
+                   ////////////////////////////////////////////////////////////////
+               }else{
+                   Log.e(TAG,firebaseFirestoreException.toString())
+               }
             }
+
+//            database.get()
+//                .addOnCompleteListener {
+//                task: Task<DocumentSnapshot> ->
+//                    if (task.isSuccessful){
+//                        val user = task.result!!.toObject(User::class.java)
+//
+//                        if (user!=null){
+//                            popupEditTextLastName.setText(user.user_lastName)
+//                            popupEditTextFirstName.setText(user.user_firstName)
+//                            popupEditTextAddress.setText(user.user_address)
+//                            popupEditTextContactNumber.setText(user.user_contactNumber)
+//
+//                            //date of birth
+//                            var dateOfBirth = user.user_birthDate
+//                            val formatter = SimpleDateFormat("MM/dd/yyyy")
+//                            popupEditTextBirthDate.setText(formatter.format(dateOfBirth))
+//
+//                            //gender
+//                            if(user.user_gender == "M"){
+//                                popupRadioButtonMale.isChecked = true
+//                            }else{
+//                                popupRadioButtonFemale.isChecked = true
+//                            }
+//
+//                            //organ donor
+//                            if(user.user_isOrganDonor == true){
+//                                popupRadioButtonYes.isChecked = true
+//                            }else{
+//                                popupRadioButtonNo.isChecked = true
+//                            }
+//
+//                            popupEditTextBloodType.setText(user.user_bloodType)
+//
+//                            //put emergency contacts into list view
+//                            val arrayList = user.user_emergencyContacts
+//
+//                            if (arrayList != null) {
+//                                val adapter = ArrayAdapter<String>(
+//                                    this,
+//                                    R.layout.row_simple_text,
+//                                    R.id.textView_rowSimpleTextText,
+//                                    arrayList
+//                                )
+//
+//                                //dynamic change of listview hight
+//                                if (arrayList.size > 1){
+//                                    popupListViewEmergencyContacts.layoutParams.height = 95
+//                                }
+//                                popupListViewEmergencyContacts.adapter = adapter
+//                            }
+//
+//                            //allows emergency listview to scroll
+//                            popupListViewEmergencyContacts.setOnTouchListener { v, event ->
+//                                v.parent.requestDisallowInterceptTouchEvent(true)
+//                                return@setOnTouchListener false
+//                            }
+//
+//                            //put allergies into list view
+//                            val arrayListAllergies = user.user_allergies
+//
+//                            if (arrayListAllergies != null) {
+//                                val adapter = ArrayAdapter<String>(
+//                                    this,
+//                                    R.layout.row_simple_text,
+//                                    R.id.textView_rowSimpleTextText,
+//                                    arrayListAllergies
+//                                )
+//
+//                                //dynamic change of listview hight
+//                                if (arrayListAllergies.size > 1){
+//                                    popupListViewAllergies.layoutParams.height = 95
+//                                }
+//                                popupListViewAllergies.adapter = adapter
+//                            }
+//
+//                            //allows emergency listview to scroll
+//                            popupListViewAllergies.setOnTouchListener { v, event ->
+//                                v.parent.requestDisallowInterceptTouchEvent(true)
+//                                return@setOnTouchListener false
+//                            }
+//
+//                        }
+//                    }
+//            }
 
 
             //date time picker popup
@@ -471,11 +625,11 @@ class AccountDetailsActivity : AppCompatActivity() {
                     .collection("Client")
                     .document("${currentUser!!.uid}")
 
-                database.get()
-                    .addOnCompleteListener {
-                        task: Task<DocumentSnapshot> ->
-                        if (task.isSuccessful){
-                            val arrayListAllergy = task.result!!.get("user_allergies") as ArrayList<String>
+                database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                    if (documentSnapshot!=null)
+                    {
+//                        val user = documentSnapshot.toObject(com.example.mickey.redalert.models.User::class.java)
+                        val arrayListAllergy = documentSnapshot.get("user_allergies") as ArrayList<String>
 
                             if (arrayListAllergy != null) {
                                 val adapter = ArrayAdapter<String>(
@@ -522,9 +676,64 @@ class AccountDetailsActivity : AppCompatActivity() {
                             }
 
 
-                        }
-
+                        }else{
+                        Log.e(TAG, firebaseFirestoreException.toString())
                     }
+
+                }
+//                    .addOnCompleteListener {
+//                        task: Task<DocumentSnapshot> ->
+//                        if (task.isSuccessful){
+//                            val arrayListAllergy = task.result!!.get("user_allergies") as ArrayList<String>
+//
+//                            if (arrayListAllergy != null) {
+//                                val adapter = ArrayAdapter<String>(
+//                                    this,
+//                                    R.layout.row_simple_text,
+//                                    R.id.textView_rowSimpleTextText,
+//                                    arrayListAllergy
+//                                )
+//                                popupListView.adapter = adapter
+//
+//
+//                                //allows list to open
+//                                popupListView.setOnItemClickListener { parent, view, position, id ->
+//                                    var alertDialog = AlertDialog.Builder(this)
+//                                    alertDialog.setIcon(R.drawable.ic_info_black_24dp)
+//                                    alertDialog.setMessage("Do you want to delete \n" +
+//                                            "'${popupListView.getItemAtPosition(position)}' from your allergies? ")
+//                                    alertDialog.setTitle("CONFIRM DELETE!")
+//                                    alertDialog.setCancelable(false)
+//
+//                                    alertDialog.setPositiveButton("OK") { dialog, which ->
+//                                        arrayListAllergy.removeAt(position)
+//
+//                                        val adapter = ArrayAdapter<String>(
+//                                            this,
+//                                            R.layout.row_simple_text,
+//                                            R.id.textView_rowSimpleTextText,
+//                                            arrayListAllergy
+//                                        )
+//                                        popupListView.adapter = adapter
+//
+//                                        database.update("user_allergies", arrayListAllergy)
+//
+//                                    }
+//
+//                                    alertDialog.setNegativeButton("No!"){ dialog, which ->
+//                                        dialog.dismiss()
+//
+//                                    }
+//
+//                                    alertDialog.show()
+//                                    Toast.makeText(this, "${popupListView.getItemAtPosition(position)}", Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
+//
+//
+//                        }
+//
+//                    }
 
                 dialogAllergyUpdate = Dialog(this)
                 dialogAllergyUpdate.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -535,6 +744,55 @@ class AccountDetailsActivity : AppCompatActivity() {
                 popupButtonCancel.setOnClickListener {
                     val arrayListFinalAllergies =
                     dialogAllergyUpdate.dismiss()
+                }
+                popupButtonAdd.setOnClickListener {
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    val database = FirebaseFirestore.getInstance()
+                        .collection("Client")
+                        .document("${currentUser!!.uid}")
+                    val allergy = popupEditTextAllergy.text.toString().trim()
+
+                    if (allergy.isNullOrEmpty())
+                    {
+                        errorDialog("Please Enter Allergy!", "MISSING DATA!")
+                    }else{
+                        database.get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
+                            if (task.isSuccessful) {
+                                //do
+                                val arrayListAllergy = task.result!!.get("user_allergies") as ArrayList<String>
+                                if (arrayListAllergy != null) {
+                                    if (arrayListAllergy.contains(allergy)) {
+                                        errorDialog(
+                                            "'$allergy' is already in the\n Allergy List!",
+                                            "DUPLICATE ENTRY!"
+                                        )
+                                    } else {
+                                        database.update("user_allergies", FieldValue.arrayUnion(allergy))
+                                    }
+                                }
+                            }else {
+                                Log.e(TAG, task.exception.toString())
+                            }
+                        }
+
+//                            { documentSnapshot, firebaseFirestoreException ->
+//                            if (documentSnapshot!=null) {
+//                                val arrayListAllergy = documentSnapshot.get("user_allergies") as ArrayList<String>
+//
+//                                if (arrayListAllergy != null) {
+//                                    if (arrayListAllergy.contains(allergy)){
+//                                        errorDialog("'$allergy' is already in the\n Allergy List!",
+//                                            "DUPLICATE ENTRY!")
+//                                    }else
+//                                    {
+//                                        database.update("user_allergies", FieldValue.arrayUnion(allergy))
+//                                    }
+//
+//                                }
+//                            }
+//                        }
+                    }
+
                 }
 
             }

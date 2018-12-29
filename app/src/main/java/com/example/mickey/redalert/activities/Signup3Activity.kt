@@ -181,8 +181,6 @@ class Signup3Activity : AppCompatActivity() {
                 //loading start
                 progress.setTitle("Loading")
                 progress.setMessage("Please wait while loading...")
-                progress.setCancelable(false) // disable dismiss by tapping outside of the dialog
-                progress.show()
 
 
                 val resultURI = result.uri

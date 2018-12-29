@@ -20,7 +20,7 @@
             <EditText
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
+                    android:inputType="text|textPersonName"
                     android:ems="10"
                     android:textColor="#f0f7f4"
                     android:background="@drawable/selector_bg_edit_2"

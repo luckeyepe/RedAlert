@@ -28,11 +28,13 @@ import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_account_details.*
+import kotlinx.android.synthetic.main.popup_allergy_update.view.*
 import kotlinx.android.synthetic.main.popup_blood_type.view.*
 import kotlinx.android.synthetic.main.popup_change_password.view.*
 import kotlinx.android.synthetic.main.popup_update_account_details_part_1.view.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AccountDetailsActivity : AppCompatActivity() {
     private val TAG = "AccountDetailsActivity"
@@ -327,11 +329,6 @@ class AccountDetailsActivity : AppCompatActivity() {
                                 return@setOnTouchListener false
                             }
 
-                            //allows list to open
-                            popupListViewAllergies.setOnItemClickListener { parent, view, position, id ->
-                                Toast.makeText(this, "${popupListViewAllergies.getItemAtPosition(position)}", Toast.LENGTH_SHORT).show()
-                            }
-
                         }
                     }
             }
@@ -460,6 +457,85 @@ class AccountDetailsActivity : AppCompatActivity() {
             popupImageViewEditAllergies.setOnClickListener {
                 //todo popup edit allergies
                 Toast.makeText(this, "Popup Edit Allergies", Toast.LENGTH_SHORT).show()
+                var dialogAllergyUpdate: Dialog?
+                var popupView = LayoutInflater.from(this).inflate(R.layout.popup_allergy_update, null)
+
+                val popupEditTextAllergy = popupView.editText_popUpAllergyUpdateAllergy
+                val popupButtonAdd = popupView.button_popUpAllergyUpdateAdd
+                val popupButtonCancel = popupView.button_popUpAllergyUpdateCancel
+                val popupListView = popupView.listView_popupAllergyUpdateAllergyList
+
+                //fill in data
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                val database = FirebaseFirestore.getInstance()
+                    .collection("Client")
+                    .document("${currentUser!!.uid}")
+
+                database.get()
+                    .addOnCompleteListener {
+                        task: Task<DocumentSnapshot> ->
+                        if (task.isSuccessful){
+                            val arrayListAllergy = task.result!!.get("user_allergies") as ArrayList<String>
+
+                            if (arrayListAllergy != null) {
+                                val adapter = ArrayAdapter<String>(
+                                    this,
+                                    R.layout.row_simple_text,
+                                    R.id.textView_rowSimpleTextText,
+                                    arrayListAllergy
+                                )
+                                popupListView.adapter = adapter
+
+
+                                //allows list to open
+                                popupListView.setOnItemClickListener { parent, view, position, id ->
+                                    var alertDialog = AlertDialog.Builder(this)
+                                    alertDialog.setIcon(R.drawable.ic_info_black_24dp)
+                                    alertDialog.setMessage("Do you want to delete \n" +
+                                            "'${popupListView.getItemAtPosition(position)}' from your allergies? ")
+                                    alertDialog.setTitle("CONFIRM DELETE!")
+                                    alertDialog.setCancelable(false)
+
+                                    alertDialog.setPositiveButton("OK") { dialog, which ->
+                                        arrayListAllergy.removeAt(position)
+
+                                        val adapter = ArrayAdapter<String>(
+                                            this,
+                                            R.layout.row_simple_text,
+                                            R.id.textView_rowSimpleTextText,
+                                            arrayListAllergy
+                                        )
+                                        popupListView.adapter = adapter
+
+                                        database.update("user_allergies", arrayListAllergy)
+
+                                    }
+
+                                    alertDialog.setNegativeButton("No!"){ dialog, which ->
+                                        dialog.dismiss()
+
+                                    }
+
+                                    alertDialog.show()
+                                    Toast.makeText(this, "${popupListView.getItemAtPosition(position)}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+
+                        }
+
+                    }
+
+                dialogAllergyUpdate = Dialog(this)
+                dialogAllergyUpdate.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialogAllergyUpdate.setContentView(popupView)
+                dialogAllergyUpdate.setCancelable(false)
+                dialogAllergyUpdate.show()
+
+                popupButtonCancel.setOnClickListener {
+                    val arrayListFinalAllergies =
+                    dialogAllergyUpdate.dismiss()
+                }
 
             }
 

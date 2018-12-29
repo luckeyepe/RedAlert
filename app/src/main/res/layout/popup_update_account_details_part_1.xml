@@ -188,20 +188,44 @@
                             android:ems="10"
                             android:id="@+id/editText_popupUpdateAccountDetailsBloodType" android:hint="Blood Type"
                             android:inputType="date"/>
-                    <TextView
-                            android:text="Allergies"
+                    <LinearLayout
+                            android:orientation="horizontal"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:id="@+id/textView21" android:textSize="18sp"
-                            android:textStyle="bold" android:textAllCaps="true" android:textColor="#d3d3d3"/>
+                            android:layout_height="match_parent">
+                        <TextView
+                                android:text="Allergies"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:id="@+id/textView21"
+                                android:textSize="18sp"
+                                android:textStyle="bold" android:textAllCaps="true" android:textColor="#d3d3d3"/>
+                        <ImageView
+                                android:layout_marginRight="190dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" app:srcCompat="@android:drawable/ic_menu_edit"
+                                android:id="@+id/imageView_popupUpdateAccountDetailsEditAllergies"
+                                android:layout_weight="1"/>
+
+                    </LinearLayout>
                     <ListView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:id="@+id/listView_popupUpdateAccountDetailsAllergies"/>
-                    <TextView
-                            android:text="Emergency Contacts"
+                    <LinearLayout
+                            android:orientation="horizontal"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:id="@+id/textView22" android:textSize="18sp"
-                            android:textStyle="bold" android:textAllCaps="true" android:textColor="#d3d3d3"/>
+                            android:layout_height="match_parent">
+                        <TextView
+                                android:text="Emergency Contacts"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:id="@+id/textView22"
+                                android:textSize="18sp"
+                                android:textStyle="bold" android:textAllCaps="true" android:textColor="#d3d3d3"/>
+                        <ImageView
+                                android:layout_marginRight="70dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" app:srcCompat="@android:drawable/ic_menu_edit"
+                                android:id="@+id/imageView_popupUpdateAccountDetailsEditEmergencyContacts" android:layout_weight="1"/>
+                    </LinearLayout>
                     <ListView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"

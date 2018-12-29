@@ -77,7 +77,8 @@ class AccountDetailsActivity : AppCompatActivity() {
                             textView_accountDetailsIsOrganDonor.text = "No"
                         }
 
-                        textView_accountDetailsFullName.text = "${user.user_lastName}, ${user.user_firstName}"
+//                        textView_accountDetailsFullName.text = "${user.user_lastName}, ${user.user_firstName}"
+                        textView_accountDetailsFullName.text = "${currentUser.displayName}"
                         textView_accountDetailsAddress.text = user.user_address
                         textView_accountDetailsContactNumber.text = user.user_contactNumber.toString()
                         var dateOfBirth = user.user_birthDate
@@ -402,92 +403,6 @@ class AccountDetailsActivity : AppCompatActivity() {
                    Log.e(TAG,firebaseFirestoreException.toString())
                }
             }
-
-//            database.get()
-//                .addOnCompleteListener {
-//                task: Task<DocumentSnapshot> ->
-//                    if (task.isSuccessful){
-//                        val user = task.result!!.toObject(User::class.java)
-//
-//                        if (user!=null){
-//                            popupEditTextLastName.setText(user.user_lastName)
-//                            popupEditTextFirstName.setText(user.user_firstName)
-//                            popupEditTextAddress.setText(user.user_address)
-//                            popupEditTextContactNumber.setText(user.user_contactNumber)
-//
-//                            //date of birth
-//                            var dateOfBirth = user.user_birthDate
-//                            val formatter = SimpleDateFormat("MM/dd/yyyy")
-//                            popupEditTextBirthDate.setText(formatter.format(dateOfBirth))
-//
-//                            //gender
-//                            if(user.user_gender == "M"){
-//                                popupRadioButtonMale.isChecked = true
-//                            }else{
-//                                popupRadioButtonFemale.isChecked = true
-//                            }
-//
-//                            //organ donor
-//                            if(user.user_isOrganDonor == true){
-//                                popupRadioButtonYes.isChecked = true
-//                            }else{
-//                                popupRadioButtonNo.isChecked = true
-//                            }
-//
-//                            popupEditTextBloodType.setText(user.user_bloodType)
-//
-//                            //put emergency contacts into list view
-//                            val arrayList = user.user_emergencyContacts
-//
-//                            if (arrayList != null) {
-//                                val adapter = ArrayAdapter<String>(
-//                                    this,
-//                                    R.layout.row_simple_text,
-//                                    R.id.textView_rowSimpleTextText,
-//                                    arrayList
-//                                )
-//
-//                                //dynamic change of listview hight
-//                                if (arrayList.size > 1){
-//                                    popupListViewEmergencyContacts.layoutParams.height = 95
-//                                }
-//                                popupListViewEmergencyContacts.adapter = adapter
-//                            }
-//
-//                            //allows emergency listview to scroll
-//                            popupListViewEmergencyContacts.setOnTouchListener { v, event ->
-//                                v.parent.requestDisallowInterceptTouchEvent(true)
-//                                return@setOnTouchListener false
-//                            }
-//
-//                            //put allergies into list view
-//                            val arrayListAllergies = user.user_allergies
-//
-//                            if (arrayListAllergies != null) {
-//                                val adapter = ArrayAdapter<String>(
-//                                    this,
-//                                    R.layout.row_simple_text,
-//                                    R.id.textView_rowSimpleTextText,
-//                                    arrayListAllergies
-//                                )
-//
-//                                //dynamic change of listview hight
-//                                if (arrayListAllergies.size > 1){
-//                                    popupListViewAllergies.layoutParams.height = 95
-//                                }
-//                                popupListViewAllergies.adapter = adapter
-//                            }
-//
-//                            //allows emergency listview to scroll
-//                            popupListViewAllergies.setOnTouchListener { v, event ->
-//                                v.parent.requestDisallowInterceptTouchEvent(true)
-//                                return@setOnTouchListener false
-//                            }
-//
-//                        }
-//                    }
-//            }
-
 
             //date time picker popup
             popupEditTextBirthDate.setOnClickListener {
@@ -863,6 +778,11 @@ class AccountDetailsActivity : AppCompatActivity() {
                     }
 
                 }
+            }
+
+            popupButtonUpdate.setOnClickListener {
+                var currentUser = FirebaseAuth.getInstance().currentUser
+                Log.d(TAG, "the current user id is ${currentUser!!.uid}")
             }
 
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

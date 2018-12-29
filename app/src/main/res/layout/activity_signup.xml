@@ -117,6 +117,7 @@
                         android:background="@drawable/selector_bg_edit_2"
                         android:gravity="center"
                         android:hint="Contact Number"
+                        android:maxLength="11"
                         android:paddingBottom="10dp"
                         android:textColor="#f0f7f4"
                         android:textCursorDrawable="@drawable/bg_input_cursor_2"

@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,11 +30,14 @@ import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_account_details.*
+import kotlinx.android.synthetic.main.activity_signup.*
 import kotlinx.android.synthetic.main.popup_allergy_update.view.*
 import kotlinx.android.synthetic.main.popup_blood_type.view.*
 import kotlinx.android.synthetic.main.popup_change_password.view.*
 import kotlinx.android.synthetic.main.popup_emergency_contacts_update.view.*
 import kotlinx.android.synthetic.main.popup_update_account_details_part_1.view.*
+import java.sql.Timestamp
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -77,8 +81,8 @@ class AccountDetailsActivity : AppCompatActivity() {
                             textView_accountDetailsIsOrganDonor.text = "No"
                         }
 
-//                        textView_accountDetailsFullName.text = "${user.user_lastName}, ${user.user_firstName}"
-                        textView_accountDetailsFullName.text = "${currentUser.displayName}"
+                        textView_accountDetailsFullName.text = "${user.user_firstName} ${user.user_lastName}"
+//                        textView_accountDetailsFullName.text = currentUser.displayName.toString()
                         textView_accountDetailsAddress.text = user.user_address
                         textView_accountDetailsContactNumber.text = user.user_contactNumber.toString()
                         var dateOfBirth = user.user_birthDate
@@ -126,75 +130,6 @@ class AccountDetailsActivity : AppCompatActivity() {
                 Log.e(TAG, firebaseFirestoreException.toString())
             }
         }
-//            .addOnCompleteListener {
-//                task: Task<DocumentSnapshot> ->
-//                if (task.isSuccessful){
-//                    val user = task.result!!.toObject(com.example.mickey.redalert.models.User::class.java)
-//
-//                    if (user!=null) {
-//                        //occupy textviews
-//                        textView_accountDetailsBloodType.text = user.user_bloodType
-//
-//                        if (user.user_gender == "M") {
-//                            textView_accountDetailsGender.text = "Male"
-//                        } else {
-//                            textView_accountDetailsGender.text = "Female"
-//                        }
-//
-//                        if (user.user_isOrganDonor == true){
-//                            textView_accountDetailsIsOrganDonor.text = "Yes"
-//                        }else{
-//                            textView_accountDetailsIsOrganDonor.text = "No"
-//                        }
-//
-//                        textView_accountDetailsFullName.text = "${user.user_lastName}, ${user.user_firstName}"
-//                        textView_accountDetailsAddress.text = user.user_address
-//                        textView_accountDetailsContactNumber.text = user.user_contactNumber.toString()
-//                        var dateOfBirth = user.user_birthDate
-//                        val formatter = SimpleDateFormat("MM/dd/yyyy")
-//                        textView_accountDetailsDateOfBirth.text = formatter.format(dateOfBirth)
-//
-//                        //put emergency contacts into list view
-//                        val arrayList = user.user_emergencyContacts
-//
-//                        if (arrayList != null) {
-//                            val adapter = ArrayAdapter<String>(
-//                                this,
-//                                R.layout.row_simple_text,
-//                                R.id.textView_rowSimpleTextText,
-//                                arrayList
-//                            )
-//                            listView_accountDetailsEmergencyContacts.adapter = adapter
-//                        }
-//
-//                        //put allergies into list view
-//                        val arrayListAllergies = user.user_allergies
-//
-//                        if (arrayListAllergies != null) {
-//                            val adapter = ArrayAdapter<String>(
-//                                this,
-//                                R.layout.row_simple_text,
-//                                R.id.textView_rowSimpleTextText,
-//                                arrayListAllergies
-//                            )
-//                            listView_accountDetailsAllergies.adapter = adapter
-//                        }
-//
-//                        //load up user profile picture
-//                        if(user.user_profilePictureURL == "default"){
-//                            Picasso.get().load(R.drawable.default_avata)
-//                                .into(circleImageView_acountDetailsProfilePicture)
-//                        }else {
-//                            Picasso.get().load(user.user_profilePictureURL)
-//                                .into(circleImageView_acountDetailsProfilePicture)
-//                        }
-//                        progress.dismiss()
-//                    }
-//
-//                }else{
-//                    //todo popup error that no data exists
-//                }
-//            }
 
         //update profile picture
         circleImageView_acountDetailsProfilePicture.setOnClickListener {
@@ -783,6 +718,72 @@ class AccountDetailsActivity : AppCompatActivity() {
             popupButtonUpdate.setOnClickListener {
                 var currentUser = FirebaseAuth.getInstance().currentUser
                 Log.d(TAG, "the current user id is ${currentUser!!.uid}")
+                //
+                val firstName = popupEditTextFirstName.text.toString().trim()
+                val lastName = popupEditTextLastName.text.toString().trim()
+                val address = popupEditTextAddress.text.toString().trim()
+                val contactNumber = popupEditTextContactNumber.text.toString().trim()
+
+                val stringDate = popupEditTextBirthDate.text.toString().trim()
+                val formatter: DateFormat
+                val date: Date
+                formatter = SimpleDateFormat("MM/dd/yyyy")
+                date = formatter.parse(stringDate)
+                val timeStampDate = Timestamp(date.time)
+
+                val birthDate = timeStampDate
+                val bloodType = popupEditTextBloodType.text.toString().trim()
+                var gender = ""
+
+                gender = if (popupRadioGroupGender.checkedRadioButtonId == popupRadioButtonMale.id){
+                    "M"
+                }else{
+                    "F"
+                }
+
+                var organDonor = false
+                organDonor = popupRadioGroupOrganDonor.checkedRadioButtonId == popupRadioButtonYes.id
+
+                if (!firstName.isNullOrEmpty() && !lastName.isNullOrEmpty() && !address.isNullOrEmpty()
+                    && !contactNumber.isNullOrEmpty()){
+                    val progress = ProgressDialog(this)
+
+                    progress.setTitle("Please Wait")
+                    progress.setMessage("Updating your personal data...")
+                    progress.setCancelable(false) // disable dismiss by tapping outside of the dialog
+                    progress.show()
+                    //todo update info
+                    database.update(
+                        "user_firstName", firstName,
+                        "user_lastName", lastName,
+                        "user_address", address,
+                        "user_contactNumber", contactNumber,
+                        "user_birthDate", birthDate,
+                        "user_bloodType", bloodType,
+                        "user_gender", gender,
+                        "user_isOrganDonor", organDonor
+                    ).addOnCompleteListener {
+                        task: Task<Void> ->
+                        if (task.isSuccessful){
+                            val profileUpdates = UserProfileChangeRequest.Builder()
+                                .setDisplayName("$firstName $lastName")
+                                .build()
+
+                            if (currentUser != null) {
+                                currentUser.updateProfile(profileUpdates)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            Log.d(TAG, "User profile updated.")
+                                            progress.dismiss()
+                                            successDialog("UPDATE SUCCESS", "User information is now up to date")
+                                        }
+                                    }
+                            }
+
+                        }
+                    }
+                }
+
             }
 
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

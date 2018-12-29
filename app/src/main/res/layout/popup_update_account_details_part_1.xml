@@ -93,6 +93,7 @@
                             android:textStyle="bold" android:textAllCaps="true" android:textColor="#d3d3d3"/>
                     <EditText
                             android:layout_marginBottom="8dp"
+                            android:maxLength="11"
                             android:layout_width="325dp"
                             android:layout_height="wrap_content"
                             android:textCursorDrawable="@drawable/bg_input_cursor_2"

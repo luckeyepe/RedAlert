@@ -134,22 +134,6 @@ class SignupActivity : AppCompatActivity() {
                                 progress.dismiss()
                             }
                         }
-
-//                    mDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
-//
-//                    mDatabase!!.setValue(user).addOnCompleteListener {
-//                            task: Task<Void> ->
-//                        if (task.isSuccessful){
-//                            Toast.makeText(this, "User Created", Toast.LENGTH_LONG).show()
-//
-//                            var signup2 = Intent(this, Signup2Activity::class.java)
-//                            startActivity(signup2)
-//                            finish()
-//                        }
-//                        else{
-//                            Toast.makeText(this, "User not Created", Toast.LENGTH_LONG).show()
-//                        }
-//                    }
                 }
                 else{
                     Toast.makeText(this, "User already Created", Toast.LENGTH_LONG).show()

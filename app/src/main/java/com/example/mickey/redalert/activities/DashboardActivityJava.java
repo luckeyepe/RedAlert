@@ -70,49 +70,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         public void onClick(View view) {
             Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
             startActivity(intent);
-           /* if(checkPermission(Manifest.permission.SEND_SMS)){
 
-
-                user = FirebaseAuth.getInstance().getCurrentUser();
-
-                db = FirebaseFirestore.getInstance();
-                db.collection("Client").document("" + user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                ArrayList<String> list = new ArrayList<String>();
-                                list=(ArrayList<String>)document.get("user_emergencyContacts");
-
-                              for(int counter=0;counter<list.size();counter++)
-                              {
-                                  Log.e("CURRENT LOCATION", "" + currentLocation.toString());
-                                  //Log.e(" CONTAIN", list.toString());
-                                  messageToSendEmergency="I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY!";
-                                  phoneNumberToSend=list.get(counter);
-                                  SmsManager smsManager = SmsManager.getDefault();
-                                  smsManager.sendTextMessage(phoneNumberToSend,null,messageToSendEmergency,null,null);
-                              }
-
-                            }
-
-                            else
-                            {
-                                Log.e("DOES NOT CONTAIN", "NOT FOUND!");
-                               // Toast.makeText(DashboardActivity.this, "STUDENT NOT FOUND!",
-                                      //  Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                });
-
-
-            }
-            else{
-                ActivityCompat.requestPermissions(DashboardActivityJava.this,new String[]{Manifest.permission.SEND_SMS},SEND_SMS_PREMISSION_REQUEST_CODE);
-
-            }*/
         }
     };
 

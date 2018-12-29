@@ -121,7 +121,7 @@ public class current_location_map_fragment extends FragmentActivity implements O
 
 
                                 //Log.e(" CONTAIN", list.toString());
-                                messageToSendEmergency="I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY! I AM AT " + address;
+                                messageToSendEmergency="I AM " + user.getDisplayName() +  " AND I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY! I AM AT " + address;
                                 phoneNumberToSend=list.get(counter);
                                 SmsManager smsManager = SmsManager.getDefault();
                                 smsManager.sendTextMessage(phoneNumberToSend,null,messageToSendEmergency,null,null);

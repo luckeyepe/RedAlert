@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_dashboard.*
 
+
 class DashboardActivity : AppCompatActivity() {
     var alertDialog: AlertDialog.Builder ?= null
     private var mCurrentUser: FirebaseUser?= null
@@ -270,7 +271,6 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         super.onOptionsItemSelected(item)
-
         if (item != null){
 
             when(item.itemId){
@@ -287,7 +287,6 @@ class DashboardActivity : AppCompatActivity() {
                 }
             }
         }
-
         return true
     }
 }

@@ -1,9 +1,9 @@
 package com.example.mickey.redalert.activities
 
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.ProgressDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -13,8 +13,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
 import android.widget.ArrayAdapter
+import android.widget.RadioGroup
 import android.widget.Toast
 import com.example.mickey.redalert.R
+import com.example.mickey.redalert.models.User
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.EmailAuthProvider
@@ -27,9 +29,13 @@ import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_account_details.*
-import kotlinx.android.synthetic.main.activity_signup3v2.*
+import kotlinx.android.synthetic.main.activity_signup.*
+import kotlinx.android.synthetic.main.activity_signup2.*
+import kotlinx.android.synthetic.main.popup_blood_type.view.*
 import kotlinx.android.synthetic.main.popup_change_password.view.*
+import kotlinx.android.synthetic.main.popup_update_account_details_part_1.view.*
 import java.text.SimpleDateFormat
+import java.util.*
 
 class AccountDetailsActivity : AppCompatActivity() {
     private val TAG = "AccountDetailsActivity"
@@ -208,6 +214,258 @@ class AccountDetailsActivity : AppCompatActivity() {
             }
 
             alertDialog.show()
+        }
+
+        button_accountDetailsUpdateInfo.setOnClickListener {
+            //todo popup the update account detail xml
+            var dialog = Dialog(this)
+            var popupView = LayoutInflater.from(this).inflate(R.layout.popup_update_account_details_part_1, null)
+
+            var popupEditTextLastName = popupView.editText_popupUpdateAccountDetailsLastName
+            var popupEditTextFirstName = popupView.editText_popupUpdateAccountDetailsFirstName
+            var popupEditTextAddress = popupView.editText_popupUpdateAccountDetailsAddress
+            var popupEditTextContactNumber = popupView.editText_popupUpdateAccountDetailsContactNumber
+            var popupEditTextBirthDate = popupView.editText_popupUpdateAccountDetailsBirthdate
+            var popupRadioGroupGender = popupView.radioGroup_popupUpdateAccountDetailsGender
+            var popupRadioButtonMale = popupView.radioButton_popupUpdateAccountDetailsMale
+            var popupRadioButtonFemale = popupView.radioButton_popupUpdateAccountDetailsFemale
+            var popupRadioGroupOrganDonor = popupView.radioGroup_popupUpdateAccountDetailsOrganDonor
+            var popupRadioButtonYes = popupView.radioButton_popupUpdateAccountDetailsOrganDonorYes
+            var popupRadioButtonNo = popupView.radioButton_popupUpdateAccountDetailsOrganDonorNo
+            var popupEditTextBloodType = popupView.editText_popupUpdateAccountDetailsBloodType
+            var popupListViewEmergencyContacts = popupView.listView_popupUpdateAccountDetailsEmergencyContacts
+            var popupListViewAllergies = popupView.listView_popupUpdateAccountDetailsAllergies
+            var popupButtonCancel = popupView.button_popupUpdateAccountDetailsCancel
+            var popupButtonUpdate = popupView.button_popupUpdateAccountDetailsUpdate
+
+            popupEditTextBirthDate.isFocusable = false
+            popupEditTextBirthDate.isClickable = true
+            popupEditTextBloodType.isFocusable = false
+            popupEditTextBloodType.isClickable = true
+
+            //fill up data
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            val database = FirebaseFirestore.getInstance().collection("Client").document(currentUser!!.uid)
+
+            database.get()
+                .addOnCompleteListener {
+                task: Task<DocumentSnapshot> ->
+                    if (task.isSuccessful){
+                        val user = task.result!!.toObject(User::class.java)
+
+                        if (user!=null){
+                            popupEditTextLastName.setText(user.user_lastName)
+                            popupEditTextFirstName.setText(user.user_firstName)
+                            popupEditTextAddress.setText(user.user_address)
+                            popupEditTextContactNumber.setText(user.user_contactNumber)
+
+                            //date of birth
+                            var dateOfBirth = user.user_birthDate
+                            val formatter = SimpleDateFormat("MM/dd/yyyy")
+                            popupEditTextBirthDate.setText(formatter.format(dateOfBirth))
+
+                            //gender
+                            if(user.user_gender == "M"){
+                                popupRadioButtonMale.isChecked = true
+                            }else{
+                                popupRadioButtonFemale.isChecked = true
+                            }
+
+                            //organ donor
+                            if(user.user_isOrganDonor == true){
+                                popupRadioButtonYes.isChecked = true
+                            }else{
+                                popupRadioButtonNo.isChecked = true
+                            }
+
+                            popupEditTextBloodType.setText(user.user_bloodType)
+
+                            //put emergency contacts into list view
+                            val arrayList = user.user_emergencyContacts
+
+                            if (arrayList != null) {
+                                val adapter = ArrayAdapter<String>(
+                                    this,
+                                    R.layout.row_simple_text,
+                                    R.id.textView_rowSimpleTextText,
+                                    arrayList
+                                )
+
+                                //dynamic change of listview hight
+                                if (arrayList.size > 1){
+                                    popupListViewEmergencyContacts.layoutParams.height = 95
+                                }
+                                popupListViewEmergencyContacts.adapter = adapter
+                            }
+
+                            //allows emergency listview to scroll
+                            popupListViewEmergencyContacts.setOnTouchListener { v, event ->
+                                v.parent.requestDisallowInterceptTouchEvent(true)
+                                return@setOnTouchListener false
+                            }
+
+                            //put allergies into list view
+                            val arrayListAllergies = user.user_allergies
+
+                            if (arrayListAllergies != null) {
+                                val adapter = ArrayAdapter<String>(
+                                    this,
+                                    R.layout.row_simple_text,
+                                    R.id.textView_rowSimpleTextText,
+                                    arrayListAllergies
+                                )
+
+                                //dynamic change of listview hight
+                                if (arrayListAllergies.size > 1){
+                                    popupListViewAllergies.layoutParams.height = 95
+                                }
+                                popupListViewAllergies.adapter = adapter
+                            }
+
+                            //allows emergency listview to scroll
+                            popupListViewAllergies.setOnTouchListener { v, event ->
+                                v.parent.requestDisallowInterceptTouchEvent(true)
+                                return@setOnTouchListener false
+                            }
+
+                            //allows list to open
+                            popupListViewAllergies.setOnItemClickListener { parent, view, position, id ->
+                                Toast.makeText(this, "${popupListViewAllergies.getItemAtPosition(position)}", Toast.LENGTH_SHORT).show()
+                            }
+
+                        }
+                    }
+            }
+
+
+            //date time picker popup
+            popupEditTextBirthDate.setOnClickListener {
+                val c = Calendar.getInstance()
+                val year = c.get(Calendar.YEAR)
+                val month = c.get(Calendar.MONTH)
+                val day = c.get(Calendar.DAY_OF_MONTH)
+
+                val dpd =
+                    DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                        // Display Selected date in textbox
+                        var date = "${monthOfYear + 1}/$dayOfMonth/$year"
+                        popupEditTextBirthDate.setText(date)
+                    }, year, month, day)
+                dpd.show()
+            }
+
+            //blood type popup
+            popupEditTextBloodType.setOnClickListener {
+                var dialogBloodType: Dialog?
+                var popupView = LayoutInflater.from(this).inflate(R.layout.popup_blood_type, null)
+
+                var popupRadioGroupPositive = popupView.radioGroup_popupBloodTypeGroupPositive
+                var popupRadioGroupNegative = popupView.radioGroup_popupBloodTypeGroupNegative
+                var popupRadioButtonAPositive = popupView.radioButton_popupBloodTypeAPositive
+                var popupRadioButtonBPositive = popupView.radioButton_popupBloodTypeBPositive
+                var popupRadioButtonABPositive = popupView.radioButton_popupBloodTypeABPositive
+                var popupRadioButtonOPositive = popupView.radioButton_popupBloodTypeOPositive
+                var popupRadioButtonANegative = popupView.radioButton_popupBloodTypeANegative
+                var popupRadioButtonBNegative = popupView.radioButton_popupBloodTypeBNegative
+                var popupRadioButtonABNegative = popupView.radioButton_popupBloodTypeABNegative
+                var popupRadioButtonONegative = popupView.radioButton_popupBloodTypeONegative
+                var popupButtonOK = popupView.button_popupBloodTypeOk
+
+                //clean all checks
+                popupRadioGroupPositive.clearCheck()
+                popupRadioGroupNegative.clearCheck()
+
+                //change listener
+                popupRadioGroupPositive.setOnCheckedChangeListener { group, checkedId ->
+                    if (checkedId != -1){
+                        popupRadioGroupNegative.setOnCheckedChangeListener(null)
+                        popupRadioGroupNegative.clearCheck()
+
+                        when(popupRadioGroupPositive.checkedRadioButtonId){
+                            popupRadioButtonAPositive.id->{
+                                popupEditTextBloodType.setText("A+")
+                                popupRadioButtonABNegative.isChecked = false
+                                popupRadioButtonANegative.isChecked = false
+                                popupRadioButtonBNegative.isChecked = false
+                                popupRadioButtonONegative.isChecked = false
+                            }
+
+                            popupRadioButtonBPositive.id ->{
+                                popupEditTextBloodType.setText("B+")
+                                popupRadioButtonABNegative.isChecked = false
+                                popupRadioButtonANegative.isChecked = false
+                                popupRadioButtonBNegative.isChecked = false
+                                popupRadioButtonONegative.isChecked = false
+                            }
+
+                            popupRadioButtonABPositive.id ->{
+                                popupEditTextBloodType.setText("AB+")
+                                popupRadioButtonABNegative.isChecked = false
+                                popupRadioButtonANegative.isChecked = false
+                                popupRadioButtonBNegative.isChecked = false
+                                popupRadioButtonONegative.isChecked = false
+                            }
+
+                            popupRadioButtonOPositive.id ->{
+                                popupEditTextBloodType.setText("O+")
+                                popupRadioButtonABNegative.isChecked = false
+                                popupRadioButtonANegative.isChecked = false
+                                popupRadioButtonBNegative.isChecked = false
+                                popupRadioButtonONegative.isChecked = false
+                            }
+                        }
+                    }
+                }
+
+                popupRadioGroupNegative.setOnCheckedChangeListener { group, checkedId ->
+                    if (checkedId != -1){
+                        popupRadioGroupPositive.setOnCheckedChangeListener(null)
+                        popupRadioGroupPositive.clearCheck()
+
+                        when(popupRadioGroupNegative.checkedRadioButtonId){
+                            popupRadioButtonANegative.id->{
+                                popupEditTextBloodType.setText("A-")
+                                popupRadioGroupPositive.clearCheck()
+                            }
+
+                            popupRadioButtonBNegative.id ->{
+                                popupEditTextBloodType.setText("B-")
+                                popupRadioGroupPositive.clearCheck()
+                            }
+
+                            popupRadioButtonABNegative.id ->{
+                                popupEditTextBloodType.setText("AB-")
+                                popupRadioGroupPositive.clearCheck()
+                            }
+
+                            popupRadioButtonONegative.id ->{
+                                popupEditTextBloodType.setText("O-")
+                                popupRadioGroupPositive.clearCheck()
+                            }
+                        }
+                    }
+                }
+
+
+                dialogBloodType = Dialog(this)
+                dialogBloodType.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialogBloodType.setContentView(popupView)
+                dialogBloodType.setCancelable(false)
+                dialogBloodType.show()
+
+                popupButtonOK.setOnClickListener {
+                    dialogBloodType.dismiss()
+                }
+            }
+
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(popupView)
+            dialog.setCancelable(false)
+            dialog.show()
+
+            popupButtonCancel.setOnClickListener {
+                dialog.dismiss()
+            }
         }
 
     }

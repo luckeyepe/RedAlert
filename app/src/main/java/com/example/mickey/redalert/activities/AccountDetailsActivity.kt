@@ -1,17 +1,23 @@
 package com.example.mickey.redalert.activities
 
 import android.app.Activity
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.mickey.redalert.R
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,6 +28,7 @@ import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_account_details.*
 import kotlinx.android.synthetic.main.activity_signup3v2.*
+import kotlinx.android.synthetic.main.popup_change_password.view.*
 import java.text.SimpleDateFormat
 
 class AccountDetailsActivity : AppCompatActivity() {
@@ -137,6 +144,160 @@ class AccountDetailsActivity : AppCompatActivity() {
             alertDialog.show()
         }
 
+        button_accountDetailsUpdatePassword.setOnClickListener {
+            var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+            alertDialog.setMessage("Do you want to change your password?")
+            alertDialog.setCancelable(false)
+            alertDialog.setTitle("CHANGE PASSWORD")
+
+            alertDialog.setPositiveButton("Yes"){dialog, which ->
+                //todo popup update password xml
+                var dialog: Dialog?
+                var popupView = LayoutInflater.from(this).inflate(R.layout.popup_change_password, null)
+
+                var popupEditTextOldPassword = popupView.textInputEditText_popupChangePasswordOldPassword
+                var popupEditTextNewPassword = popupView.textInputEditText_popupChangePasswordNewPassword
+                var popupEditTextConfirmPassword = popupView.textInputEditText_popupChangePasswordConfirmPassword
+                var popupUpdateButton = popupView.button_popupChangePasswordUpdate
+
+                popupUpdateButton.setOnClickListener {
+                    if (!popupEditTextOldPassword.text.toString().trim().isNullOrEmpty()
+                        &&!popupEditTextNewPassword.text.toString().trim().isNullOrEmpty()
+                        && !popupEditTextConfirmPassword.text.toString().trim().isNullOrEmpty()) {
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        val oldPassword = popupEditTextOldPassword.text.toString().trim()
+                        val credential = EmailAuthProvider.getCredential(currentUser!!.email.toString(), oldPassword)
+
+                        currentUser.reauthenticate(credential)
+                            .addOnCompleteListener {
+                                task: Task<Void> ->
+                                if (task.isSuccessful){
+                                    val newPassword = popupEditTextNewPassword.text.toString().trim()
+                                    val confirmPassword = popupEditTextConfirmPassword.text.toString().trim()
+                                    if(isValidPassword(newPassword, confirmPassword)){
+                                        currentUser.updatePassword(newPassword).addOnCompleteListener {
+                                            task: Task<Void> ->
+                                            if  (task.isSuccessful){
+                                                Log.d(TAG, "User has updated their password")
+                                                successDialog("SUCCESS", "Your password has now been update")
+                                            }else{
+                                                Log.e(TAG, task.exception.toString())
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    //todo popup old password mismatch
+                                    errorDialog("Incorrect old password", "PASSWORD ERROR")
+                                }
+                            }
+                    }else{
+                        //todo popup please make sure all fields are not empty
+                        errorDialog("Fill in all fields", "MISSING DATA")
+                    }
+
+                }
+
+                dialog = Dialog(this)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.setContentView(popupView)
+                dialog.show()
+            }
+
+            alertDialog.setNegativeButton("No") { dialog, which ->
+                dialog.dismiss()
+            }
+
+            alertDialog.show()
+        }
+
+    }
+
+    private fun successDialog(title: String, message: String) {
+        var alertDialog = AlertDialog.Builder(this)
+        alertDialog.setIcon(R.drawable.ic_info_black_24dp)
+        alertDialog.setMessage(message)
+        alertDialog.setTitle(title)
+        alertDialog.setCancelable(false)
+        alertDialog.setPositiveButton("OK") { dialog, which ->
+            dialog.dismiss()
+        }
+        alertDialog.show()
+    }
+
+    private fun isValidPassword(newPassword: String, confirmPassword: String): Boolean {
+        if(isStringContainNumber(newPassword)){
+            if(isStringContainUpperCase(newPassword)){
+                if(isStringContainLowerCase(newPassword)){
+                    if(isStringContainSpecialCharacter(newPassword)){
+                        if(newPassword.length >=8){
+                            if (newPassword == confirmPassword){
+                                return true
+                            }else{
+                                errorDialog("New password and confirm password do not match", "INCORRECT PASSWORD")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private fun isStringContainSpecialCharacter(string: String): Boolean {
+        for(c in string.toCharArray()){
+            if (!c.isLetterOrDigit())
+                return true
+        }
+
+        errorDialog("Password must contain at least one (1) special character", "INCORRECT PASSWORD")
+
+        return false
+    }
+
+    private fun isStringContainLowerCase(string: String): Boolean {
+        for(c in string.toCharArray()){
+            if (c.isLowerCase())
+                return true
+        }
+
+        errorDialog("Password must contain at least one (1) lower case character", "INCORRECT PASSWORD")
+
+        return false
+    }
+
+    private fun isStringContainUpperCase(string: String): Boolean {
+        for(c in string.toCharArray()){
+            if (c.isUpperCase())
+                return true
+        }
+
+        errorDialog("Password must contain at least one (1) upper case character", "INCORRECT PASSWORD")
+
+        return false
+    }
+
+    private fun isStringContainNumber(string: String): Boolean {
+
+        for(c in string.toCharArray()){
+            if (c.isDigit())
+                return true
+        }
+
+        errorDialog("Password must contain at least one (1) digit", "INCORRECT PASSWORD")
+
+        return false
+    }
+
+    private fun errorDialog(message: String, title: String) {
+        var alertDialog = AlertDialog.Builder(this)
+        alertDialog.setIcon(R.drawable.ic_error_black_24dp)
+        alertDialog.setMessage(message)
+        alertDialog.setTitle(title)
+        alertDialog.setCancelable(false)
+        alertDialog.setPositiveButton("OK") { dialog, which ->
+            dialog.dismiss()
+        }
+        alertDialog.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

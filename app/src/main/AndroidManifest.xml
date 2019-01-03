@@ -48,6 +48,9 @@
         <activity android:name=".activities.Signup3Activity">
         </activity>
         <activity android:name=".activities.AccountDetailsActivity">
+            <!--adds back button-->
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                       android:value=".activities.DashboardActivityJava"/>
         </activity>
         <activity android:name=".activities.SettingsActivity">
         </activity>
@@ -57,6 +60,11 @@
         <activity android:name=".activities.DashboardActivityJava">
         </activity>
         <activity android:name=".current_location_map_fragment">
+        </activity>
+        <activity android:name=".activities.chat_activities.LatestMessagesActivity">
+            <!--adds back button-->
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                       android:value=".activities.DashboardActivityJava"/>
         </activity>
     </application>
 

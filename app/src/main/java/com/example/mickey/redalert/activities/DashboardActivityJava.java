@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import com.example.mickey.redalert.R;
+import com.example.mickey.redalert.activities.chat_activities.LatestMessagesActivity;
 import com.example.mickey.redalert.current_location_map_fragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -118,8 +119,8 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
                 }
 
                 case R.id.item_menuMessages: {
-//                    Intent intent = new Intent(this, AccountDetails.class);
-//                    startActivity(intent);
+                    Intent intent = new Intent(this, LatestMessagesActivity.class);
+                    startActivity(intent);
                 }
 
                 case R.id.item_menuLogout: {

@@ -32,9 +32,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -62,6 +67,27 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);//to recieve notifs
+
+        //save device token for the user to the firestore
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+                if (currentUser.getDisplayName().contains("ERU")){
+                    DocumentReference db = FirebaseFirestore.getInstance().collection("Eru").document(currentUser.getUid());
+                    db.update("eru_token", instanceIdResult.getToken());
+                    Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
+                }else {
+                    DocumentReference db = FirebaseFirestore.getInstance().collection("Client").document(currentUser.getUid());
+                    db.update("user_token", instanceIdResult.getToken());
+                    Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
+                }
+            }
+        });
+
+
         refs();
         btn_dashboardEmergency.setOnClickListener(reportEmergency);
     }
@@ -121,6 +147,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
                 case R.id.item_menuMessages: {
                     Intent intent = new Intent(this, LatestMessagesActivity.class);
                     startActivity(intent);
+                    break;
                 }
 
                 case R.id.item_menuLogout: {

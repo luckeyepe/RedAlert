@@ -11,6 +11,7 @@ import com.example.mickey.redalert.User
 import com.example.mickey.redalert.view_holders.UsersViewHolder
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.xwray.groupie.GroupAdapter
@@ -53,9 +54,20 @@ class NewMessagesActivity : AppCompatActivity() {
 //                        "${userItem.user.user_firstName} ${userItem.user.user_lastName}")
                     Log.d("NewMassagesActivity", "User UID: ${userItem.user.user_id.toString()}")
                     //pass on entire user object
-                    intent.putExtra("receivingUser", userItem.user)
-                    startActivity(intent)
-                    finish()
+                    FirebaseFirestore.getInstance()
+                        .collection("Client")
+                        .document(FirebaseAuth.getInstance().currentUser!!.uid)
+                        .get().addOnCompleteListener {
+                            task: Task<DocumentSnapshot> ->
+                            if (task.isSuccessful){
+                                val document = task.result!!.toObject(com.example.mickey.redalert.models.User::class.java)
+                                intent.putExtra("sendingUser", document)
+                                intent.putExtra("receivingUser", userItem.user)
+                                startActivity(intent)
+                                finish()
+                            }
+                        }
+
                 }
             }
         }

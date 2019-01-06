@@ -1,7 +1,7 @@
 package com.example.mickey.redalert.activities
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.mickey.redalert.R
 import com.google.firebase.auth.FirebaseAuth

@@ -5,13 +5,13 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.chat_activities.LatestMessagesActivity">
+        tools:context=".activities.chat_activities.NewMessagesActivity">
 
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="0dp"
-            android:layout_height="0dp" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:id="@+id/recylerView_lastestMessagesActivityRecylerView"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" android:id="@+id/recylerView_newMessages"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

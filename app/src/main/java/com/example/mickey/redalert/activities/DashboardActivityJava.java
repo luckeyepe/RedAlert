@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -78,10 +78,12 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
                 if (currentUser.getDisplayName().contains("ERU")){
                     DocumentReference db = FirebaseFirestore.getInstance().collection("Eru").document(currentUser.getUid());
                     db.update("eru_token", instanceIdResult.getToken());
+                    db.update("eru_instanceID", instanceIdResult.getId());
                     Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
                 }else {
                     DocumentReference db = FirebaseFirestore.getInstance().collection("Client").document(currentUser.getUid());
                     db.update("user_token", instanceIdResult.getToken());
+                    db.update("user_instanceID", instanceIdResult.getId());
                     Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
                 }
             }
@@ -167,8 +169,6 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         btn_dashboardEmergency=findViewById(R.id.btn_dashboardEmergency);
     }
 
-
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         request = new LocationRequest().create();
@@ -227,4 +227,6 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         client.connect();
 
     }
+
+
 }

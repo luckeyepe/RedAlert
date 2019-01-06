@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.example.mickey.redalert">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -48,9 +49,11 @@
         <activity android:name=".activities.Signup3Activity">
         </activity>
         <activity android:name=".activities.AccountDetailsActivity">
-            <!--adds back button-->
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                       android:value=".activities.DashboardActivityJava"/>
+
+            <!-- adds back button -->
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".activities.DashboardActivityJava"/>
         </activity>
         <activity android:name=".activities.SettingsActivity">
         </activity>
@@ -62,26 +65,42 @@
         <activity android:name=".current_location_map_fragment">
         </activity>
         <activity android:name=".activities.chat_activities.LatestMessagesActivity">
-            <!--adds back button-->
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                       android:value=".activities.DashboardActivityJava"/>
-        </activity>
 
+            <!-- adds back button -->
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".activities.DashboardActivityJava"/>
+        </activity>
 
         <service android:name=".custom_classes.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_icon"
-                android:resource="@drawable/ic_message_black_24dp" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+                android:resource="@drawable/ic_message_black_24dp"/>
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_color"
-                android:resource="@color/colorAccent" />
+                android:resource="@color/colorAccent"/>
+
+        <activity android:name=".activities.chat_activities.NewMessagesActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".activities.chat_activities.LatestMessagesActivity">
+            </meta-data>
+        </activity>
+        <activity android:name=".activities.chat_activities.ChatLogActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".activities.chat_activities.LatestMessagesActivity">
+            </meta-data>
+        </activity>
     </application>
 
 </manifest>

@@ -3,7 +3,7 @@ package com.example.mickey.redalert.activities
 import android.app.AlertDialog
 import android.app.Notification
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu

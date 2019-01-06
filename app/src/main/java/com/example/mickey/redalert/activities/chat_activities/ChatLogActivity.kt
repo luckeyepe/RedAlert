@@ -1,13 +1,15 @@
-package com.example.mickey.redalert.activities
+package com.example.mickey.redalert.activities.chat_activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.mickey.redalert.R
 
-class SettingsActivity : AppCompatActivity() {
+class ChatLogActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        setContentView(R.layout.activity_chat_log)
+
+        supportActionBar?.title = "Chat Log"
     }
 }

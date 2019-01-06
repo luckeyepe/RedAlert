@@ -6,9 +6,9 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
@@ -133,7 +133,7 @@ class AccountDetailsActivity : AppCompatActivity() {
 
         //update profile picture
         circleImageView_acountDetailsProfilePicture.setOnClickListener {
-            var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+            var alertDialog = androidx.appcompat.app.AlertDialog.Builder(this)
             alertDialog.setMessage("Do you want to update your profile picture?")
             alertDialog.setCancelable(false)
             alertDialog.setTitle("UPDATE PHOTO")
@@ -154,7 +154,7 @@ class AccountDetailsActivity : AppCompatActivity() {
         }
 
         button_accountDetailsUpdatePassword.setOnClickListener {
-            var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+            var alertDialog = androidx.appcompat.app.AlertDialog.Builder(this)
             alertDialog.setMessage("Do you want to change your password?")
             alertDialog.setCancelable(false)
             alertDialog.setTitle("CHANGE PASSWORD")

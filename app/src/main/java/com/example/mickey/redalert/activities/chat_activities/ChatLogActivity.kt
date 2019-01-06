@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mickey.redalert.R
+import com.example.mickey.redalert.models.CorrespondentWithLatestMessage
 import com.example.mickey.redalert.models.Message
 import com.example.mickey.redalert.models.User
 import com.example.mickey.redalert.view_holders.ChatLogRecieveItemViewHolder
@@ -113,7 +114,8 @@ class ChatLogActivity : AppCompatActivity() {
             message.message_recieverID = receivingUser.user_id
             message.message_timeStamp = System.currentTimeMillis()
 
-            val db = FirebaseFirestore.getInstance().collection("Messages")
+            val db = FirebaseFirestore.getInstance()
+                .collection("Messages")
             db.add(message)
                 .addOnCompleteListener { task: Task<DocumentReference> ->
                     if (task.isSuccessful) {

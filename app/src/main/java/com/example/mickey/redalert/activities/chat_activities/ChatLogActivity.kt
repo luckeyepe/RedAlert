@@ -25,7 +25,17 @@ class ChatLogActivity : AppCompatActivity() {
         val sendingUser = intent.getParcelableExtra<User>("sendingUser")
         supportActionBar?.title = "${receivingUser.user_firstName} ${receivingUser.user_lastName}"
 
-        //////////////////////
+        loadMessagesToRecylerView(receivingUser, sendingUser)
+
+        button_chatLogActivitySend.setOnClickListener {
+            sendMessage(sendingUser, receivingUser)
+        }
+    }
+
+    private fun loadMessagesToRecylerView(
+        receivingUser: User,
+        sendingUser: User
+    ) {
         val adapter = GroupAdapter<ViewHolder>()
 
         //database reference
@@ -33,49 +43,59 @@ class ChatLogActivity : AppCompatActivity() {
             .collection("Messages")
 
         db.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-            if (querySnapshot != null){
-                recyclerView_chatLogActivityChats.adapter = null//clears the recyler view first before adding new data
+            if (querySnapshot != null) {
+                //clears the recycler view first before adding new data
+                adapter.clear()
+
                 var messagesArray = ArrayList<Message>()
                 //store the data
-                for (result in querySnapshot){
+                for (result in querySnapshot) {
                     var document = result.toObject(Message::class.java)
                     messagesArray.add(document)
                 }
 
-                //sort arraylist via time stamps
-                messagesArray.sortBy{selector(it)}
+                if (messagesArray.size != 0) {
+                    //sort arraylist via time stamps
+                    messagesArray.sortBy { selector(it) }
 
-                for (document in messagesArray){
-                    if (document.message_recieverID == receivingUser.user_id
-                        && document.message_senderID == sendingUser.user_id){
-                        //if user sent a message
-                        adapter.add(ChatLogSendItemViewHolder(sendingUser.user_profilePictureURL.toString(),
-                            document.message_messageContent!!))
-                    }else{
-                        if(document.message_recieverID == sendingUser.user_id
-                            && document.message_senderID == receivingUser.user_id){
-                            //if user recieves a message
-                            adapter.add(ChatLogRecieveItemViewHolder(receivingUser.user_profilePictureURL.toString(),
-                                document.message_messageContent!!))
+                    for (document in messagesArray) {
+                        if (document.message_recieverID == receivingUser.user_id
+                            && document.message_senderID == sendingUser.user_id
+                        ) {
+                            //if user sent a message
+                            adapter.add(
+                                ChatLogSendItemViewHolder(
+                                    sendingUser.user_profilePictureURL.toString(),
+                                    document.message_messageContent!!
+                                )
+                            )
+                        } else {
+                            if (document.message_recieverID == sendingUser.user_id
+                                && document.message_senderID == receivingUser.user_id
+                            ) {
+                                //if user recieves a message
+                                adapter.add(
+                                    ChatLogRecieveItemViewHolder(
+                                        receivingUser.user_profilePictureURL.toString(),
+                                        document.message_messageContent!!
+                                    )
+                                )
+                            }
                         }
                     }
+
+                    //clear the edit text for the next message
+                    editText_chatLogActivityMessage.text = null
+
+                    recyclerView_chatLogActivityChats.layoutManager = LinearLayoutManager(this)
+                    recyclerView_chatLogActivityChats.adapter = adapter
+
+                    //auto scroll to the last message sent/received
+                    recyclerView_chatLogActivityChats.smoothScrollToPosition(messagesArray.size - 1)
                 }
-
-                //clear the edit text for the next message
-                editText_chatLogActivityMessage.text = null
-
-                recyclerView_chatLogActivityChats.layoutManager = LinearLayoutManager(this)
-                recyclerView_chatLogActivityChats.adapter = adapter
-
-                //auto scroll to the last message sent/recieved
-                recyclerView_chatLogActivityChats.smoothScrollToPosition(messagesArray.size-1)
-            }else{
+            } else {
                 Log.e("ChatLog", firebaseFirestoreException.toString())
             }
-        }
-        ////////////////////////
-        button_chatLogActivitySend.setOnClickListener {
-            sendMessage(sendingUser, receivingUser)
         }
     }
 

@@ -20,9 +20,10 @@
             app:layout_constraintHorizontal_bias="1.0"/>
     <TextView
             android:text="We are the gods of the new world order. We are center, the depth of the sun"
-            android:layout_width="200dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
+            android:maxWidth="200dp"
             android:background="@drawable/rounded_corner2"
             android:id="@+id/textView_messageToItemRowMessage"
             app:layout_constraintEnd_toStartOf="@+id/circleImageView_messageToItemRowProfilePic"

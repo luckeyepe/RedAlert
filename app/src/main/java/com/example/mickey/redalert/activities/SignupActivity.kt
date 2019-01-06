@@ -97,6 +97,7 @@ class SignupActivity : AppCompatActivity() {
                 if (task.isSuccessful){
                     var currentUser = mAuth!!.currentUser
                     Log.d(TAG, "the current user id is ${currentUser!!.uid}")
+                    user.user_id = currentUser.uid
 
                     mDatabase = FirebaseFirestore.getInstance().collection("Client")
                         .document(currentUser!!.uid)

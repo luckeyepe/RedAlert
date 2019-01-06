@@ -2,6 +2,8 @@ package com.example.mickey.redalert.activities.chat_activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mickey.redalert.R
@@ -45,7 +47,13 @@ class NewMessagesActivity : AppCompatActivity() {
 
                 //launch chatlog activity
                 adapter.setOnItemClickListener { item, view ->
+                    val userItem = item as UsersViewHolder
                     val intent = Intent(view.context, ChatLogActivity::class.java)
+//                    intent.putExtra("receiverName",
+//                        "${userItem.user.user_firstName} ${userItem.user.user_lastName}")
+                    Log.d("NewMassagesActivity", "User UID: ${userItem.user.user_id.toString()}")
+                    //pass on entire user object
+                    intent.putExtra("receivingUser", userItem.user)
                     startActivity(intent)
                     finish()
                 }

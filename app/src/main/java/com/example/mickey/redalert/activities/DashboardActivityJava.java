@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.example.mickey.redalert.R;
 import com.example.mickey.redalert.activities.chat_activities.LatestMessagesActivity;
 import com.example.mickey.redalert.current_location_map_fragment;
+import com.example.mickey.redalert.models.Message;
+import com.example.mickey.redalert.models.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,8 +35,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -46,6 +50,9 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class DashboardActivityJava extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
 
     Button btn_dashboardEmergency;
+    Button btn_dashboardPolice;
+    Button btn_dashboardAmbulance;
+    Button btn_dashboardFireDepartment;
     FirebaseFirestore db;
     FirebaseUser user;
     String messageToSendEmergency = "";
@@ -92,6 +99,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
 
         refs();
         btn_dashboardEmergency.setOnClickListener(reportEmergency);
+
     }
 
     private View.OnClickListener reportEmergency = new View.OnClickListener() {
@@ -99,11 +107,30 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         public void onClick(View view) {
             Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
             startActivity(intent);
-
         }
     };
 
+    private void sendMessage(String text) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (!text.isEmpty()) {
+            Message message = new Message();
+            message.setMessage_messageContent(text);
+            message.setMessage_senderID(currentUser.getUid());
+            message.setMessage_recieverID("YYF3YxYFBIW5WSSF9ouW");
+            message.setMessage_timeStamp(System.currentTimeMillis());
 
+            final CollectionReference database = FirebaseFirestore.getInstance()
+                    .collection("Messages");
+            database.add(message)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            database.document(documentReference.getId())
+                                    .update("message_id", documentReference.getId());
+                        }
+                    });
+        }
+    }
     private boolean checkPermission(String permission)
     {
         int checkPermission = ContextCompat.checkSelfPermission(this,permission);
@@ -167,6 +194,9 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
     public void refs()
     {
         btn_dashboardEmergency=findViewById(R.id.btn_dashboardEmergency);
+        btn_dashboardPolice=findViewById(R.id.btn_dashboardPolice);
+        btn_dashboardAmbulance=findViewById(R.id.btn_dashboardAmbulance);
+        btn_dashboardFireDepartment=findViewById(R.id.btn_dashboardFireDepartment);
     }
 
     @Override

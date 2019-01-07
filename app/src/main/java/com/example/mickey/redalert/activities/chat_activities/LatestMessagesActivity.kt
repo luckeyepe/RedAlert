@@ -49,6 +49,7 @@ class LatestMessagesActivity : AppCompatActivity() {
                 if (messagesArray.size != 0) {
                     //removes irrelevant users and messages
                     var trimmedArrayList = ArrayList<Message>()
+                    var uniqueUserArray = ArrayList<Message>()
 
                     for (i in 0 until messagesArray.size) {
                         Log.d("Index at", i.toString())
@@ -63,35 +64,22 @@ class LatestMessagesActivity : AppCompatActivity() {
                     Log.d("TrimmedArrayContents", trimmedArrayList[i].message_messageContent)
                     }
 
-                    var uniqueUserArray = ArrayList<Message>()
                     //removes irrelevant users and messages
                     for (i in 0 until trimmedArrayList.size) {
-                        if (uniqueUserArray.size != 0) {
+                        if (!uniqueUserArray.isEmpty()) {
                             for (j in 0 until uniqueUserArray.size) {
                                 if ((uniqueUserArray[j].message_recieverID == trimmedArrayList[i].message_recieverID
                                             || uniqueUserArray[j].message_senderID == trimmedArrayList[i].message_recieverID)
                                     && (uniqueUserArray[j].message_recieverID == trimmedArrayList[i].message_senderID
-                                            || uniqueUserArray[j].message_senderID ==trimmedArrayList[i].message_senderID)
-                                    && uniqueUserArray[j].message_timeStamp!! <= trimmedArrayList[i].message_timeStamp!!)
-                                {
-                                    Log.d("trimmedarray time match", trimmedArrayList[i].message_timeStamp.toString())
-                                    Log.d("uniquearray time match", uniqueUserArray[j].message_timeStamp.toString())
-                                    Log.d("trimmed array message", trimmedArrayList[i].message_messageContent.toString())
-                                    Log.d("unique array message", uniqueUserArray[j].message_messageContent.toString())
-
-                                    uniqueUserArray[j] = trimmedArrayList[i]
-                                }else{
-                                    if (uniqueUserArray[j].message_timeStamp!! > trimmedArrayList[i].message_timeStamp!!){
-                                        Log.d("trimmed array timestamp", trimmedArrayList[i].message_timeStamp.toString())
-                                        Log.d("unique array timestamp", uniqueUserArray[j].message_timeStamp.toString())
-                                        Log.d("trimmed array message", trimmedArrayList[i].message_messageContent.toString())
-                                        Log.d("unique array message", uniqueUserArray[j].message_messageContent.toString())
-                                    }else {
-                                        uniqueUserArray.add(trimmedArrayList[i])
-                                    }
+                                            || uniqueUserArray[j].message_senderID == trimmedArrayList[i].message_senderID)){
+                                        if(uniqueUserArray[j].message_timeStamp!! <= trimmedArrayList[i].message_timeStamp!!){
+                                            uniqueUserArray[j] = trimmedArrayList[i]
+                                        } else {
+                                            uniqueUserArray.add(trimmedArrayList[i])
+                                        }
                                 }
                             }
-                        }else{
+                        } else {
                             uniqueUserArray.add(messagesArray[i])
                         }
                     }

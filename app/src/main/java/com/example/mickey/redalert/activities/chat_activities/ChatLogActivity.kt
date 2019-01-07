@@ -85,8 +85,7 @@ class ChatLogActivity : AppCompatActivity() {
                         }
                     }
 
-                    //clear the edit text for the next message
-//                    editText_chatLogActivityMessage.text = null
+
 
                     //auto scroll to the last message sent/received
                     val layoutManager = LinearLayoutManager(this)
@@ -94,9 +93,6 @@ class ChatLogActivity : AppCompatActivity() {
 
                     recyclerView_chatLogActivityChats.layoutManager = layoutManager
                     recyclerView_chatLogActivityChats.adapter = adapter
-
-
-//                    recyclerView_chatLogActivityChats.scrollToPosition(messagesArray.size - 1)
                 }
             } else {
                 Log.e("ChatLog", firebaseFirestoreException.toString())
@@ -124,6 +120,8 @@ class ChatLogActivity : AppCompatActivity() {
                 .addOnCompleteListener { task: Task<DocumentReference> ->
                     if (task.isSuccessful) {
                         db.document(task.result!!.id).update("message_id", task.result!!.id)
+                        //clear the edit text for the next message
+                        editText_chatLogActivityMessage.text = null
                     }
                 }
         }

@@ -16,6 +16,10 @@ class ChatLogSendItemViewHolder(val userPhotoURL: String, val text: String) : It
         val profilePicture = viewHolder.itemView.circleImageView_messageToItemRowProfilePic
         val message = viewHolder.itemView.textView_messageToItemRowMessage
         Picasso.get().load(userPhotoURL).into(profilePicture)
+
+        profilePicture.setOnClickListener {
+
+        }
         message.text = text
 
     }

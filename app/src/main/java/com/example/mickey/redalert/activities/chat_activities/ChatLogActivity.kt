@@ -86,13 +86,17 @@ class ChatLogActivity : AppCompatActivity() {
                     }
 
                     //clear the edit text for the next message
-                    editText_chatLogActivityMessage.text = null
-
-                    recyclerView_chatLogActivityChats.layoutManager = LinearLayoutManager(this)
-                    recyclerView_chatLogActivityChats.adapter = adapter
+//                    editText_chatLogActivityMessage.text = null
 
                     //auto scroll to the last message sent/received
-                    recyclerView_chatLogActivityChats.smoothScrollToPosition(messagesArray.size - 1)
+                    val layoutManager = LinearLayoutManager(this)
+                    layoutManager.stackFromEnd = true
+
+                    recyclerView_chatLogActivityChats.layoutManager = layoutManager
+                    recyclerView_chatLogActivityChats.adapter = adapter
+
+
+//                    recyclerView_chatLogActivityChats.scrollToPosition(messagesArray.size - 1)
                 }
             } else {
                 Log.e("ChatLog", firebaseFirestoreException.toString())

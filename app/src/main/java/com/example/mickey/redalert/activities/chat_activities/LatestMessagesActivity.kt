@@ -74,8 +74,8 @@ class LatestMessagesActivity : AppCompatActivity() {
                                             || uniqueUserArray[j].message_senderID ==trimmedArrayList[i].message_senderID)
                                     && uniqueUserArray[j].message_timeStamp!! <= trimmedArrayList[i].message_timeStamp!!)
                                 {
-                                    Log.d("trimmed array timestamp", trimmedArrayList[i].message_timeStamp.toString())
-                                    Log.d("unique array timestamp", uniqueUserArray[j].message_timeStamp.toString())
+                                    Log.d("trimmedarray time match", trimmedArrayList[i].message_timeStamp.toString())
+                                    Log.d("uniquearray time match", uniqueUserArray[j].message_timeStamp.toString())
                                     Log.d("trimmed array message", trimmedArrayList[i].message_messageContent.toString())
                                     Log.d("unique array message", uniqueUserArray[j].message_messageContent.toString())
 

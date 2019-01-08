@@ -121,10 +121,37 @@ class ChatLogActivity : AppCompatActivity() {
                 .document(receivingUser.user_id!!)
                 .collection(sendingUser.user_id!!)
 
+//            val latestMessage = FirebaseFirestore.getInstance()
+//                .collection("Latest Massages")
+//                .document(sendingUser.user_id!!)
+//                .collection(receivingUser.user_id!!)
+//                .document(receivingUser.user_id!!)
+
+            val latestMessage = FirebaseFirestore.getInstance()
+                .collection("Latest Massages")
+                .document("latest_messages")
+                .collection(sendingUser.user_id!!)
+                .document(receivingUser.user_id!!)
+
+//            val reverseLatestMessage = FirebaseFirestore.getInstance()
+//                .collection("Latest Massages")
+//                .document(receivingUser.user_id!!)
+//                .collection(sendingUser.user_id!!)
+//                .document(sendingUser.user_id!!)
+
+            val reverseLatestMessage = FirebaseFirestore.getInstance()
+                .collection("Latest Massages")
+                .document("latest_messages")
+                .collection(receivingUser.user_id!!)
+                .document(sendingUser.user_id!!)
+
             db.add(message)
                 .addOnCompleteListener { task: Task<DocumentReference> ->
                     if (task.isSuccessful) {
                         db.document(task.result!!.id).update("message_id", task.result!!.id)
+                        message.message_id = task.result!!.id
+
+                        latestMessage.set(message)
                         //clear the edit text for the next message
                         editText_chatLogActivityMessage.text = null
                     }
@@ -135,6 +162,9 @@ class ChatLogActivity : AppCompatActivity() {
                 .addOnCompleteListener { task: Task<DocumentReference> ->
                     if (task.isSuccessful) {
                         reverseDb.document(task.result!!.id).update("message_id", task.result!!.id)
+                        message.message_id = task.result!!.id
+
+                        reverseLatestMessage.set(message)
                         //clear the edit text for the next message
                     }
                 }

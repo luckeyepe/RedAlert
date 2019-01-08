@@ -28,6 +28,7 @@ class LatestMessagesViewHolder(val message: Message): Item<ViewHolder>() {
                 val userDB = FirebaseFirestore.getInstance()
                     .collection("Client")
                     .document(message.message_senderID!!)
+
                 userDB.get()
                     .addOnCompleteListener {
                             task: Task<DocumentSnapshot> ->
@@ -40,19 +41,11 @@ class LatestMessagesViewHolder(val message: Message): Item<ViewHolder>() {
                             }
                         }
                     }
-//                val db = FirebaseFirestore.getInstance()
-//                    .collection("Messages")
-//                    .document(message.message_id!!)
-//                db.get().addOnCompleteListener {
-//                    task: Task<DocumentSnapshot> ->
-//                    if (task.isSuccessful){
-//
-//                    }
-//                }
             }else{
                 val userDB = FirebaseFirestore.getInstance()
                     .collection("Client")
                     .document(message.message_recieverID!!)
+
                 userDB.get()
                     .addOnCompleteListener {
                             task: Task<DocumentSnapshot> ->

@@ -118,14 +118,62 @@ public class current_location_map_fragment extends FragmentActivity implements O
                             String postalCode = addresses.get(0).getPostalCode();
                             String knownName = addresses.get(0).getFeatureName();*/
 
-                            for(int counter=0;counter<list.size();counter++)
-                            {
-                                //Log.e(" CONTAIN", list.toString());
-                                messageToSendEmergency="I AM " + user.getDisplayName() +  " AND I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY! I AM AT " + address;
-                                sendMessage(messageToSendEmergency);//for firestore chat
-                                phoneNumberToSend=list.get(counter);
-                                SmsManager smsManager = SmsManager.getDefault();
-                                smsManager.sendTextMessage(phoneNumberToSend,null,messageToSendEmergency,null,null);
+                            for(int counter=0;counter<list.size();counter++) {
+                                if (getIntent().hasExtra("eruTypeOfService")) {
+                                    String eruTypeOfService = getIntent().getStringExtra("eruTypeOfService");
+
+                                    switch (eruTypeOfService){
+                                        case "police": {
+                                            messageToSendEmergency = "I AM " + user.getDisplayName()
+                                                    + " AND I AM IN AN EMERGENCY SITUATION. I NEED POLICE ASSISTANCE." +
+                                                    " PLEASE RESPOND IMMEDIATELY! I AM AT "
+                                                    + address;
+                                            sendMessage(messageToSendEmergency);//for firestore chat
+                                            phoneNumberToSend = list.get(counter);
+                                            SmsManager smsManager = SmsManager.getDefault();
+                                            smsManager.sendTextMessage(phoneNumberToSend, null, messageToSendEmergency,
+                                                    null, null);
+                                            break;
+                                        }
+
+                                        case "ambulance": {
+                                            messageToSendEmergency = "I AM " + user.getDisplayName()
+                                                    + " AND I AM IN AN EMERGENCY SITUATION. I NEED AN AMBULANCE." +
+                                                    " PLEASE RESPOND IMMEDIATELY! I AM AT "
+                                                    + address;
+                                            sendMessage(messageToSendEmergency);//for firestore chat
+                                            phoneNumberToSend = list.get(counter);
+                                            SmsManager smsManager = SmsManager.getDefault();
+                                            smsManager.sendTextMessage(phoneNumberToSend, null, messageToSendEmergency,
+                                                    null, null);
+                                            break;
+                                        }
+
+                                        case "fire department":{
+                                            messageToSendEmergency = "I AM " + user.getDisplayName()
+                                                    + " AND I AM IN AN EMERGENCY SITUATION. I NEED FIRE FIGHTERS." +
+                                                    " PLEASE RESPOND IMMEDIATELY! I AM AT "
+                                                    + address;
+                                            sendMessage(messageToSendEmergency);//for firestore chat
+                                            phoneNumberToSend = list.get(counter);
+                                            SmsManager smsManager = SmsManager.getDefault();
+                                            smsManager.sendTextMessage(phoneNumberToSend, null, messageToSendEmergency,
+                                                    null, null);
+                                            break;
+                                        }
+                                    }
+
+                                } else {
+                                    //Log.e(" CONTAIN", list.toString());
+                                    messageToSendEmergency = "I AM " + user.getDisplayName()
+                                            + " AND I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY! I AM AT "
+                                            + address;
+                                    sendMessage(messageToSendEmergency);//for firestore chat
+                                    phoneNumberToSend = list.get(counter);
+                                    SmsManager smsManager = SmsManager.getDefault();
+                                    smsManager.sendTextMessage(phoneNumberToSend, null, messageToSendEmergency,
+                                            null, null);
+                                }
                             }
 
                         }
@@ -158,109 +206,72 @@ public class current_location_map_fragment extends FragmentActivity implements O
             message.setMessage_recieverID(receivingUserUID);
             message.setMessage_timeStamp(System.currentTimeMillis());
 
-            final CollectionReference database = FirebaseFirestore.getInstance()
-                    .collection("Messages")
-                    .document(currentUser.getUid())
-                    .collection(receivingUserUID);
+            if (getIntent().hasExtra("eruTypeOfService")) {
+                String eruTypeOfService = getIntent().getStringExtra("eruTypeOfService");
 
-            final CollectionReference reverseDatabase = FirebaseFirestore.getInstance()
-                    .collection("Messages")
-                    .document(receivingUserUID)
-                    .collection(currentUser.getUid());
+                switch (eruTypeOfService) {
+                    case "police": {
+                        receivingUserUID = "other account";
+                        break;
+                    }
 
-            final DocumentReference latestMessages = FirebaseFirestore.getInstance()
-                    .collection("Latest Massages")
-                    .document("latest_messages")
-                    .collection(currentUser.getUid())
-                    .document(receivingUserUID);
+                    case "ambulance": {
+                        receivingUserUID = "other account 2";
+                        break;
+                    }
 
-            final DocumentReference reverseLatestMessages = FirebaseFirestore.getInstance()
-                    .collection("Latest Massages")
-                    .document("latest_messages")
-                    .collection(receivingUserUID)
-                    .document(currentUser.getUid());
+                    case "fire department": {
+                        receivingUserUID = "other account 3";
+                        break;
+                    }
+                }
 
-//            val db = FirebaseFirestore.getInstance()
-//                    .collection("Messages")
-//                    .document(sendingUser.user_id!!)
-//                .collection(receivingUser.user_id!!)
-//
-//            val reverseDb = FirebaseFirestore.getInstance()
-//                    .collection("Messages")
-//                    .document(receivingUser.user_id!!)
-//                .collection(sendingUser.user_id!!)
-//
-////            val latestMessage = FirebaseFirestore.getInstance()
-////                .collection("Latest Massages")
-////                .document(sendingUser.user_id!!)
-////                .collection(receivingUser.user_id!!)
-////                .document(receivingUser.user_id!!)
-//
-//            val latestMessage = FirebaseFirestore.getInstance()
-//                    .collection("Latest Massages")
-//                    .document("latest_messages")
-//                    .collection(sendingUser.user_id!!)
-//                .document(receivingUser.user_id!!)
-//
-////            val reverseLatestMessage = FirebaseFirestore.getInstance()
-////                .collection("Latest Massages")
-////                .document(receivingUser.user_id!!)
-////                .collection(sendingUser.user_id!!)
-////                .document(sendingUser.user_id!!)
-//
-//            val reverseLatestMessage = FirebaseFirestore.getInstance()
-//                    .collection("Latest Massages")
-//                    .document("latest_messages")
-//                    .collection(receivingUser.user_id!!)
-//                .document(sendingUser.user_id!!)
+            } else {
 
-            database.add(message)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            database.document(documentReference.getId())
-                                    .update("message_id", documentReference.getId());
+                final CollectionReference database = FirebaseFirestore.getInstance()
+                        .collection("Messages")
+                        .document(currentUser.getUid())
+                        .collection(receivingUserUID);
 
-                            latestMessages.set(message);
-                        }
-                    });
+                final CollectionReference reverseDatabase = FirebaseFirestore.getInstance()
+                        .collection("Messages")
+                        .document(receivingUserUID)
+                        .collection(currentUser.getUid());
 
-            reverseDatabase.add(message)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            reverseDatabase.document(documentReference.getId())
-                                    .update("message_id", documentReference.getId());
+                final DocumentReference latestMessages = FirebaseFirestore.getInstance()
+                        .collection("Latest Massages")
+                        .document("latest_messages")
+                        .collection(currentUser.getUid())
+                        .document(receivingUserUID);
 
-                            reverseLatestMessages.set(message);
-                        }
-                    });
+                final DocumentReference reverseLatestMessages = FirebaseFirestore.getInstance()
+                        .collection("Latest Massages")
+                        .document("latest_messages")
+                        .collection(receivingUserUID)
+                        .document(currentUser.getUid());
 
-//            db.add(message)
-//                    .addOnCompleteListener { task: Task<DocumentReference> ->
-//                if (task.isSuccessful) {
-//                    db.document(task.result!!.id).update("message_id", task.result!!.id)
-//                    message.message_id = task.result!!.id
-//
-//                    latestMessage.set(message)
-//                    //clear the edit text for the next message
-//                    editText_chatLogActivityMessage.text = null
-//                }
-//            }
-//
-//            //create new document in firestore that saves the messages in the perspective of the receiver
-//            reverseDb.add(message)
-//                    .addOnCompleteListener { task: Task<DocumentReference> ->
-//                if (task.isSuccessful) {
-//                    reverseDb.document(task.result!!.id).update("message_id", task.result!!.id)
-//                    message.message_id = task.result!!.id
-//
-//                    reverseLatestMessage.set(message)
-//                    //clear the edit text for the next message
-//                }
-//            }
+                database.add(message)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                database.document(documentReference.getId())
+                                        .update("message_id", documentReference.getId());
 
+                                latestMessages.set(message);
+                            }
+                        });
 
+                reverseDatabase.add(message)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                reverseDatabase.document(documentReference.getId())
+                                        .update("message_id", documentReference.getId());
+
+                                reverseLatestMessages.set(message);
+                            }
+                        });
+            }
         }
     }
 

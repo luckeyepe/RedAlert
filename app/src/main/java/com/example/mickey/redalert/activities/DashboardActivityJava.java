@@ -92,6 +92,9 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
 
         refs();
         btn_dashboardEmergency.setOnClickListener(reportEmergency);
+        btn_dashboardFireDepartment.setOnClickListener(reportFireDepartmentEmergency);
+        btn_dashboardAmbulance.setOnClickListener(reportAmbulanceEmergency);
+        btn_dashboardPolice.setOnClickListener(reportPoliceEmergency);
 
     }
 
@@ -99,9 +102,38 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+
             startActivity(intent);
         }
     };
+
+    private View.OnClickListener reportFireDepartmentEmergency = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+            intent.putExtra("eruTypeOfService", "fire department");
+            startActivity(intent);
+        }
+    };
+
+    private View.OnClickListener reportAmbulanceEmergency = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+            intent.putExtra("eruTypeOfService", "ambulance");
+            startActivity(intent);
+        }
+    };
+
+    private View.OnClickListener reportPoliceEmergency = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+            intent.putExtra("eruTypeOfService", "police");
+            startActivity(intent);
+        }
+    };
+
 
     private boolean checkPermission(String permission)
     {

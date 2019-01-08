@@ -53,7 +53,7 @@ class AccountDetailsActivity : AppCompatActivity() {
 
         //grab data
         var currentUser = FirebaseAuth.getInstance().currentUser
-        var database = FirebaseFirestore.getInstance().collection("Client").document(currentUser!!.uid)
+        var database = FirebaseFirestore.getInstance().collection("Users").document(currentUser!!.uid)
 
         val progress = ProgressDialog(this)
 
@@ -250,7 +250,7 @@ class AccountDetailsActivity : AppCompatActivity() {
 
             //fill up data
             val currentUser = FirebaseAuth.getInstance().currentUser
-            val database = FirebaseFirestore.getInstance().collection("Client").document(currentUser!!.uid)
+            val database = FirebaseFirestore.getInstance().collection("Users").document(currentUser!!.uid)
 
             database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                if (documentSnapshot!=null)
@@ -474,7 +474,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                 //fill in data
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val database = FirebaseFirestore.getInstance()
-                    .collection("Client")
+                    .collection("Users")
                     .document("${currentUser!!.uid}")
 
                 database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
@@ -550,7 +550,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                 popupButtonAdd.setOnClickListener {
                     val currentUser = FirebaseAuth.getInstance().currentUser
                     val database = FirebaseFirestore.getInstance()
-                        .collection("Client")
+                        .collection("Users")
                         .document("${currentUser!!.uid}")
                     val allergy = popupEditTextAllergy.text.toString().trim()
 
@@ -598,7 +598,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                 //fill in data
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val database = FirebaseFirestore.getInstance()
-                    .collection("Client")
+                    .collection("Users")
                     .document("${currentUser!!.uid}")
 
                 database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
@@ -675,7 +675,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                 popupButtonAdd.setOnClickListener {
                     val currentUser = FirebaseAuth.getInstance().currentUser
                     val database = FirebaseFirestore.getInstance()
-                        .collection("Client")
+                        .collection("Users")
                         .document("${currentUser!!.uid}")
                     val contactNumber = popupEditTextContact.text.toString().trim()
 
@@ -911,7 +911,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                 val mCurrentUser = FirebaseAuth.getInstance().currentUser
                 var userID = mCurrentUser!!.uid
 
-                var database = FirebaseFirestore.getInstance().collection("Client").document(userID)
+                var database = FirebaseFirestore.getInstance().collection("Users").document(userID)
                 mStorage = FirebaseStorage.getInstance().reference
 
                 var thumbnailPath = mStorage!!.child("user_profPic").child("$userID.jpg")

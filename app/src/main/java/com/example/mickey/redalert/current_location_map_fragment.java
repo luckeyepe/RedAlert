@@ -88,7 +88,7 @@ public class current_location_map_fragment extends FragmentActivity implements O
             user = FirebaseAuth.getInstance().getCurrentUser();
 
             db = FirebaseFirestore.getInstance();
-            db.collection("Client").document("" + user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            db.collection("Users").document("" + user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {

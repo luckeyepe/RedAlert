@@ -99,7 +99,7 @@ class SignupActivity : AppCompatActivity() {
                     Log.d(TAG, "the current user id is ${currentUser!!.uid}")
                     user.user_id = currentUser.uid
 
-                    mDatabase = FirebaseFirestore.getInstance().collection("Client")
+                    mDatabase = FirebaseFirestore.getInstance().collection("Users")
                         .document(currentUser!!.uid)
                     mDatabase!!.set(user)
                         .addOnCompleteListener {

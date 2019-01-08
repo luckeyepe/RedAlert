@@ -29,7 +29,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
                 val db = FirebaseFirestore.getInstance().collection("Eru").document(currentUser.uid)
                 db.update("eru_token", token)
             } else {
-                val db = FirebaseFirestore.getInstance().collection("Client").document(currentUser.uid)
+                val db = FirebaseFirestore.getInstance().collection("Users").document(currentUser.uid)
                 db.update("user_token", token)
             }
         }

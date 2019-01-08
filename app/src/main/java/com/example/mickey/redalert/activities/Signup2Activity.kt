@@ -145,12 +145,13 @@ class Signup2Activity : AppCompatActivity() {
     }
 
     private fun addAdditionalInfo(user: User, allergyString: String) {
-        mDatabase = FirebaseFirestore.getInstance().collection("Client").document(user.user_id!!)
+        mDatabase = FirebaseFirestore.getInstance().collection("Users").document(user.user_id!!)
         var userAddedDetails = HashMap<String, Any>()
         userAddedDetails["user_bloodType"] = user.user_bloodType!!
         userAddedDetails["user_gender"] = user.user_gender!!
         userAddedDetails["user_isOrganDonor"] = user.user_isOrganDonor!!
         userAddedDetails["user_allergies"] = allergyString.split(", ")
+        userAddedDetails["user_isEru"] = false
 
         mDatabase!!.update(userAddedDetails)
             .addOnCompleteListener {

@@ -88,7 +88,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
                     db.update("eru_instanceID", instanceIdResult.getId());
                     Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
                 }else {
-                    DocumentReference db = FirebaseFirestore.getInstance().collection("Client").document(currentUser.getUid());
+                    DocumentReference db = FirebaseFirestore.getInstance().collection("Users").document(currentUser.getUid());
                     db.update("user_token", instanceIdResult.getToken());
                     db.update("user_instanceID", instanceIdResult.getId());
                     Log.d("Dashboard", "Token: "+instanceIdResult.getToken());

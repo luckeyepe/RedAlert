@@ -31,7 +31,7 @@ class NewMessagesActivity : AppCompatActivity() {
     private fun fetchAvailableUsers() {
         val adapter = GroupAdapter<ViewHolder>()
         val currentUser = FirebaseAuth.getInstance().currentUser
-        val db = FirebaseFirestore.getInstance().collection("Client")
+        val db = FirebaseFirestore.getInstance().collection("Users")
 
         recylerView_newMessages.layoutManager = LinearLayoutManager(this)
 
@@ -55,7 +55,7 @@ class NewMessagesActivity : AppCompatActivity() {
                     Log.d("NewMassagesActivity", "User UID: ${userItem.user.user_id.toString()}")
                     //pass on entire user object
                     FirebaseFirestore.getInstance()
-                        .collection("Client")
+                        .collection("Users")
                         .document(FirebaseAuth.getInstance().currentUser!!.uid)
                         .get().addOnCompleteListener {
                             task: Task<DocumentSnapshot> ->

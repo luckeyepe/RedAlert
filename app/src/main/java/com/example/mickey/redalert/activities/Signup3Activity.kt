@@ -66,7 +66,7 @@ class Signup3Activity : AppCompatActivity() {
 
                             arrayList.add(popupEditTextPhoneNumber.text.toString().trim())
                             var database = FirebaseFirestore.getInstance()
-                                .collection("Client")
+                                .collection("Users")
                                 .document(mCurrentUser!!.uid)
 
                             //update the current list
@@ -139,7 +139,7 @@ class Signup3Activity : AppCompatActivity() {
 
     private fun fillUpListView() {
         var database = FirebaseFirestore.getInstance()
-            .collection("Client")
+            .collection("Users")
             .document(mCurrentUser!!.uid)
 
         //get the contacts list
@@ -187,7 +187,7 @@ class Signup3Activity : AppCompatActivity() {
                 mCurrentUser = FirebaseAuth.getInstance().currentUser
                 var userID = mCurrentUser!!.uid
 
-                var database = FirebaseFirestore.getInstance().collection("Client").document(userID)
+                var database = FirebaseFirestore.getInstance().collection("Users").document(userID)
                 mStorage = FirebaseStorage.getInstance().reference
 
                 var thumbnailPath = mStorage!!.child("user_profPic").child("$userID.jpg")

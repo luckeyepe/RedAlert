@@ -48,6 +48,8 @@ class LatestMessagesActivity : AppCompatActivity() {
         db.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
             if (querySnapshot != null) {
                 Log.d("LatestMessages:", "Data Exists")
+                //clears the recycler view first before adding new data
+                adapter.clear()
 
                 for (result in querySnapshot) {
                     val document = result.toObject(Message::class.java)

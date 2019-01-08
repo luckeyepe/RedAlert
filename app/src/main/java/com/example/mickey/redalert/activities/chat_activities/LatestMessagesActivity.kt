@@ -36,69 +36,69 @@ class LatestMessagesActivity : AppCompatActivity() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val db = FirebaseFirestore.getInstance().collection("Messages")
 
-        db.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-            if (querySnapshot!=null) {
-                //clears the recycler view first before adding new data
-                adapter.clear()
-                var messagesArray = ArrayList<Message>()
-                for (result in querySnapshot) {
-                    val document = result.toObject(Message::class.java)
-                    messagesArray.add(document)
-                }
-
-                if (messagesArray.size != 0) {
-                    //removes irrelevant users and messages
-                    var trimmedArrayList = ArrayList<Message>()
-                    var uniqueUserArray = ArrayList<Message>()
-
-                    for (i in 0 until messagesArray.size) {
-                        Log.d("Index at", i.toString())
-                        if (messagesArray[i].message_senderID == currentUser!!.uid
-                            || messagesArray[i].message_recieverID == currentUser.uid
-                        ) {
-                            trimmedArrayList.add(messagesArray[i])
-                        }
-                    }
-
-                    for (i in 0 until trimmedArrayList.size) {
-                    Log.d("TrimmedArrayContents", trimmedArrayList[i].message_messageContent)
-                    }
-
-                    //removes irrelevant users and messages
-                    for (i in 0 until trimmedArrayList.size) {
-                        if (!uniqueUserArray.isEmpty()) {
-                            for (j in 0 until uniqueUserArray.size) {
-                                if ((uniqueUserArray[j].message_recieverID == trimmedArrayList[i].message_recieverID
-                                            || uniqueUserArray[j].message_senderID == trimmedArrayList[i].message_recieverID)
-                                    && (uniqueUserArray[j].message_recieverID == trimmedArrayList[i].message_senderID
-                                            || uniqueUserArray[j].message_senderID == trimmedArrayList[i].message_senderID)){
-                                        if(uniqueUserArray[j].message_timeStamp!! <= trimmedArrayList[i].message_timeStamp!!){
-                                            uniqueUserArray[j] = trimmedArrayList[i]
-                                        } else {
-                                            uniqueUserArray.add(trimmedArrayList[i])
-                                        }
-                                }
-                            }
-                        } else {
-                            uniqueUserArray.add(messagesArray[i])
-                        }
-                    }
-
-                    for (i in 0 until uniqueUserArray.size) {
-                        Log.d("UniqueArrayContents", uniqueUserArray[i].message_messageContent)
-                    }
-
-                    for (message in uniqueUserArray) {
-                        adapter.add(LatestMessagesViewHolder(message))
-                    }
-
-                    uniqueUserArray.clear()
-                    recylerView_lastestMessagesActivityRecylerView.adapter = adapter
-                }
-            }else{
-                Log.e("LastestMessages", firebaseFirestoreException.toString())
-            }
-        }
+//        db.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+//            if (querySnapshot!=null) {
+//                //clears the recycler view first before adding new data
+//                adapter.clear()
+//                var messagesArray = ArrayList<Message>()
+//                for (result in querySnapshot) {
+//                    val document = result.toObject(Message::class.java)
+//                    messagesArray.add(document)
+//                }
+//
+//                if (messagesArray.size != 0) {
+//                    //removes irrelevant users and messages
+//                    var trimmedArrayList = ArrayList<Message>()
+//                    var uniqueUserArray = ArrayList<Message>()
+//
+//                    for (i in 0 until messagesArray.size) {
+//                        Log.d("Index at", i.toString())
+//                        if (messagesArray[i].message_senderID == currentUser!!.uid
+//                            || messagesArray[i].message_recieverID == currentUser.uid
+//                        ) {
+//                            trimmedArrayList.add(messagesArray[i])
+//                        }
+//                    }
+//
+//                    for (i in 0 until trimmedArrayList.size) {
+//                    Log.d("TrimmedArrayContents", trimmedArrayList[i].message_messageContent)
+//                    }
+//
+//                    //removes irrelevant users and messages
+//                    for (i in 0 until trimmedArrayList.size) {
+//                        if (!uniqueUserArray.isEmpty()) {
+//                            for (j in 0 until uniqueUserArray.size) {
+//                                if ((uniqueUserArray[j].message_recieverID == trimmedArrayList[i].message_recieverID
+//                                            || uniqueUserArray[j].message_senderID == trimmedArrayList[i].message_recieverID)
+//                                    && (uniqueUserArray[j].message_recieverID == trimmedArrayList[i].message_senderID
+//                                            || uniqueUserArray[j].message_senderID == trimmedArrayList[i].message_senderID)){
+//                                        if(uniqueUserArray[j].message_timeStamp!! <= trimmedArrayList[i].message_timeStamp!!){
+//                                            uniqueUserArray[j] = trimmedArrayList[i]
+//                                        } else {
+//                                            uniqueUserArray.add(trimmedArrayList[i])
+//                                        }
+//                                }
+//                            }
+//                        } else {
+//                            uniqueUserArray.add(messagesArray[i])
+//                        }
+//                    }
+//
+//                    for (i in 0 until uniqueUserArray.size) {
+//                        Log.d("UniqueArrayContents", uniqueUserArray[i].message_messageContent)
+//                    }
+//
+//                    for (message in uniqueUserArray) {
+//                        adapter.add(LatestMessagesViewHolder(message))
+//                    }
+//
+//                    uniqueUserArray.clear()
+//                    recylerView_lastestMessagesActivityRecylerView.adapter = adapter
+//                }
+//            }else{
+//                Log.e("LastestMessages", firebaseFirestoreException.toString())
+//            }
+//        }
 
         //launch chatlog activity
         adapter.setOnItemClickListener { item, view ->

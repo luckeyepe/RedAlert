@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mickey.redalert.R
-import com.example.mickey.redalert.models.CorrespondentWithLatestMessage
 import com.example.mickey.redalert.models.Message
 import com.example.mickey.redalert.models.User
 import com.example.mickey.redalert.view_holders.ChatLogRecieveItemViewHolder
@@ -26,14 +25,14 @@ class ChatLogActivity : AppCompatActivity() {
         val sendingUser = intent.getParcelableExtra<User>("sendingUser")
         supportActionBar?.title = "${receivingUser.user_firstName} ${receivingUser.user_lastName}"
 
-        loadMessagesToRecylerView(receivingUser, sendingUser)
+        loadMessagesToRecyclerView(receivingUser, sendingUser)
 
         button_chatLogActivitySend.setOnClickListener {
             sendMessage(sendingUser, receivingUser)
         }
     }
 
-    private fun loadMessagesToRecylerView(
+    private fun loadMessagesToRecyclerView(
         receivingUser: User,
         sendingUser: User
     ) {
@@ -41,7 +40,7 @@ class ChatLogActivity : AppCompatActivity() {
 
         //database reference
         val db = FirebaseFirestore.getInstance()
-            .collection("Messages")
+            .collection("Messages").document(sendingUser.user_id!!).collection(receivingUser.user_id!!)
 
         db.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
             if (querySnapshot != null) {
@@ -85,8 +84,6 @@ class ChatLogActivity : AppCompatActivity() {
                         }
                     }
 
-
-
                     //auto scroll to the last message sent/received
                     val layoutManager = LinearLayoutManager(this)
                     layoutManager.stackFromEnd = true
@@ -116,12 +113,29 @@ class ChatLogActivity : AppCompatActivity() {
 
             val db = FirebaseFirestore.getInstance()
                 .collection("Messages")
+                .document(sendingUser.user_id!!)
+                .collection(receivingUser.user_id!!)
+
+            val reverseDb = FirebaseFirestore.getInstance()
+                .collection("Messages")
+                .document(receivingUser.user_id!!)
+                .collection(sendingUser.user_id!!)
+
             db.add(message)
                 .addOnCompleteListener { task: Task<DocumentReference> ->
                     if (task.isSuccessful) {
                         db.document(task.result!!.id).update("message_id", task.result!!.id)
                         //clear the edit text for the next message
                         editText_chatLogActivityMessage.text = null
+                    }
+                }
+
+            //create new document in firestore that saves the messages in the perspective of the receiver
+            reverseDb.add(message)
+                .addOnCompleteListener { task: Task<DocumentReference> ->
+                    if (task.isSuccessful) {
+                        reverseDb.document(task.result!!.id).update("message_id", task.result!!.id)
+                        //clear the edit text for the next message
                     }
                 }
         }

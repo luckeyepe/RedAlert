@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
+import com.example.mickey.redalert.models.Message;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -26,9 +27,12 @@ import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -116,10 +120,9 @@ public class current_location_map_fragment extends FragmentActivity implements O
 
                             for(int counter=0;counter<list.size();counter++)
                             {
-
-
                                 //Log.e(" CONTAIN", list.toString());
                                 messageToSendEmergency="I AM " + user.getDisplayName() +  " AND I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY! I AM AT " + address;
+                                sendMessage(messageToSendEmergency);//for firestore chat
                                 phoneNumberToSend=list.get(counter);
                                 SmsManager smsManager = SmsManager.getDefault();
                                 smsManager.sendTextMessage(phoneNumberToSend,null,messageToSendEmergency,null,null);
@@ -145,6 +148,121 @@ public class current_location_map_fragment extends FragmentActivity implements O
         }
     }
 
+    private void sendMessage(String text) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (!text.isEmpty()) {
+            final Message message = new Message();
+            String receivingUserUID = "mxdrUsjYZSe7Ml8wozKyWDySdaN2";
+            message.setMessage_messageContent(text);
+            message.setMessage_senderID(currentUser.getUid());
+            message.setMessage_recieverID(receivingUserUID);
+            message.setMessage_timeStamp(System.currentTimeMillis());
+
+            final CollectionReference database = FirebaseFirestore.getInstance()
+                    .collection("Messages")
+                    .document(currentUser.getUid())
+                    .collection(receivingUserUID);
+
+            final CollectionReference reverseDatabase = FirebaseFirestore.getInstance()
+                    .collection("Messages")
+                    .document(receivingUserUID)
+                    .collection(currentUser.getUid());
+
+            final DocumentReference latestMessages = FirebaseFirestore.getInstance()
+                    .collection("Latest Massages")
+                    .document("latest_messages")
+                    .collection(currentUser.getUid())
+                    .document(receivingUserUID);
+
+            final DocumentReference reverseLatestMessages = FirebaseFirestore.getInstance()
+                    .collection("Latest Massages")
+                    .document("latest_messages")
+                    .collection(receivingUserUID)
+                    .document(currentUser.getUid());
+
+//            val db = FirebaseFirestore.getInstance()
+//                    .collection("Messages")
+//                    .document(sendingUser.user_id!!)
+//                .collection(receivingUser.user_id!!)
+//
+//            val reverseDb = FirebaseFirestore.getInstance()
+//                    .collection("Messages")
+//                    .document(receivingUser.user_id!!)
+//                .collection(sendingUser.user_id!!)
+//
+////            val latestMessage = FirebaseFirestore.getInstance()
+////                .collection("Latest Massages")
+////                .document(sendingUser.user_id!!)
+////                .collection(receivingUser.user_id!!)
+////                .document(receivingUser.user_id!!)
+//
+//            val latestMessage = FirebaseFirestore.getInstance()
+//                    .collection("Latest Massages")
+//                    .document("latest_messages")
+//                    .collection(sendingUser.user_id!!)
+//                .document(receivingUser.user_id!!)
+//
+////            val reverseLatestMessage = FirebaseFirestore.getInstance()
+////                .collection("Latest Massages")
+////                .document(receivingUser.user_id!!)
+////                .collection(sendingUser.user_id!!)
+////                .document(sendingUser.user_id!!)
+//
+//            val reverseLatestMessage = FirebaseFirestore.getInstance()
+//                    .collection("Latest Massages")
+//                    .document("latest_messages")
+//                    .collection(receivingUser.user_id!!)
+//                .document(sendingUser.user_id!!)
+
+            database.add(message)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            database.document(documentReference.getId())
+                                    .update("message_id", documentReference.getId());
+
+                            latestMessages.set(message);
+                        }
+                    });
+
+            reverseDatabase.add(message)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            reverseDatabase.document(documentReference.getId())
+                                    .update("message_id", documentReference.getId());
+
+                            reverseLatestMessages.set(message);
+                        }
+                    });
+
+//            db.add(message)
+//                    .addOnCompleteListener { task: Task<DocumentReference> ->
+//                if (task.isSuccessful) {
+//                    db.document(task.result!!.id).update("message_id", task.result!!.id)
+//                    message.message_id = task.result!!.id
+//
+//                    latestMessage.set(message)
+//                    //clear the edit text for the next message
+//                    editText_chatLogActivityMessage.text = null
+//                }
+//            }
+//
+//            //create new document in firestore that saves the messages in the perspective of the receiver
+//            reverseDb.add(message)
+//                    .addOnCompleteListener { task: Task<DocumentReference> ->
+//                if (task.isSuccessful) {
+//                    reverseDb.document(task.result!!.id).update("message_id", task.result!!.id)
+//                    message.message_id = task.result!!.id
+//
+//                    reverseLatestMessage.set(message)
+//                    //clear the edit text for the next message
+//                }
+//            }
+
+
+        }
+    }
 
     private boolean checkPermission(String permission)
     {

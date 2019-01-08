@@ -81,18 +81,11 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-                if (currentUser.getDisplayName().contains("ERU")){
-                    DocumentReference db = FirebaseFirestore.getInstance().collection("Eru").document(currentUser.getUid());
-                    db.update("eru_token", instanceIdResult.getToken());
-                    db.update("eru_instanceID", instanceIdResult.getId());
-                    Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
-                }else {
-                    DocumentReference db = FirebaseFirestore.getInstance().collection("Users").document(currentUser.getUid());
+                    DocumentReference db = FirebaseFirestore.getInstance().collection("Users")
+                            .document(currentUser.getUid());
                     db.update("user_token", instanceIdResult.getToken());
                     db.update("user_instanceID", instanceIdResult.getId());
                     Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
-                }
             }
         });
 
@@ -110,27 +103,6 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         }
     };
 
-    private void sendMessage(String text) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (!text.isEmpty()) {
-            Message message = new Message();
-            message.setMessage_messageContent(text);
-            message.setMessage_senderID(currentUser.getUid());
-            message.setMessage_recieverID("YYF3YxYFBIW5WSSF9ouW");
-            message.setMessage_timeStamp(System.currentTimeMillis());
-
-            final CollectionReference database = FirebaseFirestore.getInstance()
-                    .collection("Messages");
-            database.add(message)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            database.document(documentReference.getId())
-                                    .update("message_id", documentReference.getId());
-                        }
-                    });
-        }
-    }
     private boolean checkPermission(String permission)
     {
         int checkPermission = ContextCompat.checkSelfPermission(this,permission);

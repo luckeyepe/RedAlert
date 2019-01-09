@@ -12,6 +12,7 @@ import com.example.mickey.redalert.view_holders.ChatLogSendItemViewHolder
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat_log.*
@@ -40,7 +41,9 @@ class ChatLogActivity : AppCompatActivity() {
 
         //database reference
         val db = FirebaseFirestore.getInstance()
-            .collection("Messages").document(sendingUser.user_id!!).collection(receivingUser.user_id!!)
+            .collection("Messages")
+            .document(sendingUser.user_id!!)
+            .collection(receivingUser.user_id!!).orderBy("message_timeStamp", Query.Direction.ASCENDING)
 
         db.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
             if (querySnapshot != null) {
@@ -55,8 +58,8 @@ class ChatLogActivity : AppCompatActivity() {
                 }
 
                 if (messagesArray.size != 0) {
-                    //sort arraylist via time stamps
-                    messagesArray.sortBy { selector(it) }
+//                    //sort arraylist via time stamps
+//                    messagesArray.sortBy { selector(it) }
 
                     for (document in messagesArray) {
                         if (document.message_recieverID == receivingUser.user_id
@@ -70,17 +73,13 @@ class ChatLogActivity : AppCompatActivity() {
                                 )
                             )
                         } else {
-                            if (document.message_recieverID == sendingUser.user_id
-                                && document.message_senderID == receivingUser.user_id
-                            ) {
-                                //if user recieves a message
-                                adapter.add(
-                                    ChatLogRecieveItemViewHolder(
-                                        receivingUser.user_profilePictureURL.toString(),
-                                        document.message_messageContent!!
-                                    )
+                            //if user recieves a message
+                            adapter.add(
+                                ChatLogRecieveItemViewHolder(
+                                    receivingUser.user_profilePictureURL.toString(),
+                                    document.message_messageContent!!
                                 )
-                            }
+                            )
                         }
                     }
 
@@ -109,9 +108,9 @@ class ChatLogActivity : AppCompatActivity() {
             message.message_messageContent = text
             message.message_type = "text"
             message.message_senderID = sendingUser.user_id
-            message.message_senderName = "${sendingUser.user_firstName} ${sendingUser.user_lastName}}"
+            message.message_senderName = "${sendingUser.user_firstName} ${sendingUser.user_lastName}"
             message.message_recieverID = receivingUser.user_id
-            message.message_timeStamp = System.currentTimeMillis()
+            message.message_timeStamp = System.currentTimeMillis()/1000
 
             val db = FirebaseFirestore.getInstance()
                 .collection("Messages")

@@ -29,12 +29,8 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage?) {
 //        super.onMessageReceived(p0)
-        if (message!!.data.isEmpty()){
-            Log.d("Firebase Token", "Data: "+message.data.toString())
-        }
-
         if (message?.notification != null){
-            Log.d("Firebase Token", "Data: "+message.notification!!.body.toString())
+            Log.d("FCM", "Data: "+message.notification!!.body.toString())
         }
     }
 }

@@ -41,7 +41,7 @@ class LatestMessagesActivity : AppCompatActivity() {
 
         val currentUser = FirebaseAuth.getInstance().currentUser
         val db = FirebaseFirestore.getInstance()
-            .collection("Latest Massages")
+            .collection("Latest_Massages")
             .document("latest_messages")
             .collection(currentUser!!.uid)
 

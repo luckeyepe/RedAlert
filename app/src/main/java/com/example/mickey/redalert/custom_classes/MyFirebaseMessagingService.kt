@@ -19,19 +19,11 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
     }
 
     private fun sendTokenToFirestore(token: String?) {
-
-
         val currentUser = FirebaseAuth.getInstance().currentUser
 
         if (currentUser!=null) {
-            //only emergency responce units have ERU in their display name
-            if (currentUser.displayName!!.contains("ERU")) {
-                val db = FirebaseFirestore.getInstance().collection("Eru").document(currentUser.uid)
-                db.update("eru_token", token)
-            } else {
-                val db = FirebaseFirestore.getInstance().collection("Users").document(currentUser.uid)
-                db.update("user_token", token)
-            }
+            val db = FirebaseFirestore.getInstance().collection("Users").document(currentUser.uid)
+            db.update("user_token", token)
         }
     }
 
@@ -39,17 +31,6 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 //        super.onMessageReceived(p0)
         if (message!!.data.isEmpty()){
             Log.d("Firebase Token", "Data: "+message.data.toString())
-//            Toast.makeText(applicationContext, message.data.toString(), Toast.LENGTH_LONG).show()
-//            var activity = DashboardActivityJava()
-//            var alertDialog = AlertDialog.Builder(activity.applicationContext)
-//            alertDialog.setIcon(R.drawable.ic_error_black_24dp)
-//            alertDialog.setMessage(message.notification!!.body.toString())
-//            alertDialog.setTitle(message.notification!!.title.toString())
-//            alertDialog.setCancelable(false)
-//            alertDialog.setPositiveButton("OK") { dialog, which ->
-//                dialog.dismiss()
-//            }
-//            alertDialog.show()
         }
 
         if (message?.notification != null){

@@ -107,7 +107,9 @@ class ChatLogActivity : AppCompatActivity() {
         if (!text.isNullOrEmpty()) {
             val message = Message()
             message.message_messageContent = text
+            message.message_type = "text"
             message.message_senderID = sendingUser.user_id
+            message.message_senderName = "${sendingUser.user_firstName} ${sendingUser.user_lastName}}"
             message.message_recieverID = receivingUser.user_id
             message.message_timeStamp = System.currentTimeMillis()
 
@@ -128,7 +130,7 @@ class ChatLogActivity : AppCompatActivity() {
 //                .document(receivingUser.user_id!!)
 
             val latestMessage = FirebaseFirestore.getInstance()
-                .collection("Latest Massages")
+                .collection("Latest_Massages")
                 .document("latest_messages")
                 .collection(sendingUser.user_id!!)
                 .document(receivingUser.user_id!!)
@@ -140,7 +142,7 @@ class ChatLogActivity : AppCompatActivity() {
 //                .document(sendingUser.user_id!!)
 
             val reverseLatestMessage = FirebaseFirestore.getInstance()
-                .collection("Latest Massages")
+                .collection("Latest_Massages")
                 .document("latest_messages")
                 .collection(receivingUser.user_id!!)
                 .document(sendingUser.user_id!!)

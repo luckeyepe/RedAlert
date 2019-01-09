@@ -239,13 +239,13 @@ public class current_location_map_fragment extends FragmentActivity implements O
                         .collection(currentUser.getUid());
 
                 final DocumentReference latestMessages = FirebaseFirestore.getInstance()
-                        .collection("Latest Massages")
+                        .collection("Latest_Massages")
                         .document("latest_messages")
                         .collection(currentUser.getUid())
                         .document(receivingUserUID);
 
                 final DocumentReference reverseLatestMessages = FirebaseFirestore.getInstance()
-                        .collection("Latest Massages")
+                        .collection("Latest_Massages")
                         .document("latest_messages")
                         .collection(receivingUserUID)
                         .document(currentUser.getUid());

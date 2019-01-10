@@ -146,6 +146,9 @@ class ChatLogActivity : AppCompatActivity() {
                 .collection(receivingUser.user_id!!)
                 .document(sendingUser.user_id!!)
 
+            val notificationMessages = FirebaseFirestore.getInstance()
+                .collection("Notification_Massages")
+
             db.add(message)
                 .addOnCompleteListener { task: Task<DocumentReference> ->
                     if (task.isSuccessful) {
@@ -153,6 +156,7 @@ class ChatLogActivity : AppCompatActivity() {
                         message.message_id = task.result!!.id
 
                         latestMessage.set(message)
+                        notificationMessages.document(message.message_id!!).set(message)
                         //clear the edit text for the next message
                         editText_chatLogActivityMessage.text = null
                     }

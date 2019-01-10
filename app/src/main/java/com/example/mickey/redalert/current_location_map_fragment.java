@@ -204,6 +204,7 @@ public class current_location_map_fragment extends FragmentActivity implements O
             message.setMessage_messageContent(text);
             message.setMessage_senderID(currentUser.getUid());
             message.setMessage_recieverID(receivingUserUID);
+            message.setMessage_type("emergency");
             message.setMessage_timeStamp(System.currentTimeMillis());
 
             if (getIntent().hasExtra("eruTypeOfService")) {

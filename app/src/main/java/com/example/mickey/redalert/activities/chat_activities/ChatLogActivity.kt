@@ -119,7 +119,7 @@ class ChatLogActivity : AppCompatActivity() {
                                     )
                                 }
 
-                                "confirm" ->{
+                                "emergency" ->{
 
                                 }
                             }
@@ -150,7 +150,7 @@ class ChatLogActivity : AppCompatActivity() {
                                     )
                                 }
 
-                                "confirm" ->{
+                                "emergency" ->{
 
                                 }
                             }

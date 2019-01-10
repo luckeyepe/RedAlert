@@ -18,7 +18,12 @@ class ChatLogRecieveImageItemViewHolder(val userPhotoURL: String, val text: Stri
         val profilePicture = viewHolder.itemView.circleImageView_messageFromImageItemRowProfilePic
         val message = viewHolder.itemView.imageView_messageFromImageItemRowImage
         Picasso.get().load(userPhotoURL).into(profilePicture)
-        Picasso.get().load(text).into(message)
+
+        if (text.isNullOrEmpty()){
+            Picasso.get().load(R.drawable.ic_error_black_24dp).into(message)
+        }else {
+            Picasso.get().load(text).into(message)
+        }
 
         message.setOnClickListener {
             var intent = Intent(context, MaxImageActivity::class.java)

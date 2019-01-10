@@ -39,6 +39,7 @@ class ChatLogActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
+
         val receivingUser = intent.getParcelableExtra<User>("receivingUser")
         val sendingUser = intent.getParcelableExtra<User>("sendingUser")
         supportActionBar?.title = "${receivingUser.user_firstName} ${receivingUser.user_lastName}"
@@ -95,7 +96,6 @@ class ChatLogActivity : AppCompatActivity() {
                         ) {
                             //if user sent a message
                             //check what type of message did they send
-
                             when(document.message_type){
                                 "image" ->{
                                     adapter.add(
@@ -104,6 +104,11 @@ class ChatLogActivity : AppCompatActivity() {
                                             document.message_messageContent!!, applicationContext)
                                     )
 
+//                                    adapter.add(
+//                                        ChatLogSendImageItemViewHolder(
+//                                            sendingUser.user_profilePictureURL.toString(),
+//                                            document.message_messageContent!!)
+//                                    )
                                 }
 
                                 "text" ->{
@@ -122,14 +127,18 @@ class ChatLogActivity : AppCompatActivity() {
                         } else {
                             //if user receives a message
                             //check what type of message did they send
-
                             when(document.message_type){
                                 "image" ->{
                                     adapter.add(
                                         ChatLogRecieveImageItemViewHolder(
                                             receivingUser.user_profilePictureURL.toString(),
-                                            document.message_messageContent!!,applicationContext)
+                                            document.message_messageContent!!, applicationContext)
                                     )
+//                                    adapter.add(
+//                                        ChatLogRecieveImageItemViewHolder(
+//                                            receivingUser.user_profilePictureURL.toString(),
+//                                            document.message_messageContent!!)
+//                                    )
 
                                 }
 
@@ -335,6 +344,7 @@ class ChatLogActivity : AppCompatActivity() {
                                     Log.d("ChatLog", "Download URI $downloadUri")
                                     db.document(message.message_id!!).update("message_messageContent", downloadUri.toString())
 
+                                    message.message_messageContent = downloadUri.toString()
                                     latestMessage.set(message)
                                     notificationMessages.document(message.message_id!!).set(message)
 

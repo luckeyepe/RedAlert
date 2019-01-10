@@ -101,6 +101,8 @@
                     android:value=".activities.chat_activities.LatestMessagesActivity">
             </meta-data>
         </activity>
+        <activity android:name=".activities.chat_activities.MaxImageActivity">
+        </activity>
     </application>
 
 </manifest>

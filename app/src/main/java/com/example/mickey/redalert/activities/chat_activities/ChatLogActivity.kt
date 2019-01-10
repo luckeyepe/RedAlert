@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mickey.redalert.R
 import com.example.mickey.redalert.models.Message
 import com.example.mickey.redalert.models.User
+import com.example.mickey.redalert.view_holders.ChatLogRecieveImageItemViewHolder
 import com.example.mickey.redalert.view_holders.ChatLogRecieveItemViewHolder
+import com.example.mickey.redalert.view_holders.ChatLogSendImageItemViewHolder
 import com.example.mickey.redalert.view_holders.ChatLogSendItemViewHolder
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
@@ -97,10 +99,9 @@ class ChatLogActivity : AppCompatActivity() {
                             when(document.message_type){
                                 "image" ->{
                                     adapter.add(
-                                        ChatLogSendItemViewHolder(
+                                        ChatLogSendImageItemViewHolder(
                                             sendingUser.user_profilePictureURL.toString(),
-                                            document.message_messageContent!!
-                                        )
+                                            document.message_messageContent!!, applicationContext)
                                     )
 
                                 }
@@ -109,8 +110,7 @@ class ChatLogActivity : AppCompatActivity() {
                                     adapter.add(
                                         ChatLogSendItemViewHolder(
                                             sendingUser.user_profilePictureURL.toString(),
-                                            document.message_messageContent!!
-                                        )
+                                            document.message_messageContent!!)
                                     )
                                 }
 
@@ -126,10 +126,9 @@ class ChatLogActivity : AppCompatActivity() {
                             when(document.message_type){
                                 "image" ->{
                                     adapter.add(
-                                        ChatLogRecieveItemViewHolder(
+                                        ChatLogRecieveImageItemViewHolder(
                                             receivingUser.user_profilePictureURL.toString(),
-                                            document.message_messageContent!!
-                                        )
+                                            document.message_messageContent!!,applicationContext)
                                     )
 
                                 }
@@ -138,8 +137,7 @@ class ChatLogActivity : AppCompatActivity() {
                                     adapter.add(
                                         ChatLogRecieveItemViewHolder(
                                             receivingUser.user_profilePictureURL.toString(),
-                                            document.message_messageContent!!
-                                        )
+                                            document.message_messageContent!!)
                                     )
                                 }
 
@@ -162,6 +160,7 @@ class ChatLogActivity : AppCompatActivity() {
                 Log.e("ChatLog", firebaseFirestoreException.toString())
             }
         }
+
     }
 
     private fun selector(it: Message): Long? = it.message_timeStamp

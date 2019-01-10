@@ -251,6 +251,10 @@ public class current_location_map_fragment extends FragmentActivity implements O
                         .collection(receivingUserUID)
                         .document(currentUser.getUid());
 
+                final CollectionReference notificationMessages = FirebaseFirestore.getInstance()
+                        .collection("Notification_Massages");
+
+
                 database.add(message)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
@@ -259,6 +263,7 @@ public class current_location_map_fragment extends FragmentActivity implements O
                                         .update("message_id", documentReference.getId());
 
                                 latestMessages.set(message);
+                                notificationMessages.document(documentReference.getId()).set(message);
                             }
                         });
 

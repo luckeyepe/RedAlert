@@ -37,9 +37,10 @@ class LatestMessagesViewHolder(val message: Message): Item<ViewHolder>() {
                             if (document != null) {
                                 Picasso.get().load(document.user_profilePictureURL).into(profilePicture)
                                 fullname.text = "${document.user_firstName} ${document.user_lastName}"
+
                                 when(message.message_type){
                                     "image" ->{
-                                        lastMessage.text = "Sent an image"
+                                        lastMessage.text = "Received an image"
                                     }
 
                                     "text" ->{
@@ -68,6 +69,20 @@ class LatestMessagesViewHolder(val message: Message): Item<ViewHolder>() {
                                 Picasso.get().load(document.user_profilePictureURL).into(profilePicture)
                                 fullname.text = "${document.user_firstName} ${document.user_lastName}"
                                 lastMessage.text = message.message_messageContent
+
+                                when(message.message_type){
+                                    "image" ->{
+                                        lastMessage.text = "Sent an image"
+                                    }
+
+                                    "text" ->{
+                                        lastMessage.text = message.message_messageContent
+                                    }
+
+                                    "confirm" ->{
+
+                                    }
+                                }
                             }
                         }
                     }

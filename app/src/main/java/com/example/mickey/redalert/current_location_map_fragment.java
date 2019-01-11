@@ -200,84 +200,219 @@ public class current_location_map_fragment extends FragmentActivity implements O
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (!text.isEmpty()) {
             final Message message = new Message();
-            String receivingUserUID = "mxdrUsjYZSe7Ml8wozKyWDySdaN2";
+            String receivingUserUID = "";
             message.setMessage_messageContent(text);
             message.setMessage_senderID(currentUser.getUid());
             message.setMessage_recieverID(receivingUserUID);
             message.setMessage_type("emergency");
             message.setMessage_timeStamp(System.currentTimeMillis());
 
-            if (getIntent().hasExtra("eruTypeOfService")) {
-                String eruTypeOfService = getIntent().getStringExtra("eruTypeOfService");
+            String eruTypeOfService = getIntent().getStringExtra("eruTypeOfService");
 
-                switch (eruTypeOfService) {
-                    case "police": {
-                        receivingUserUID = "other account";
-                        break;
-                    }
-
-                    case "ambulance": {
-                        receivingUserUID = "other account 2";
-                        break;
-                    }
-
-                    case "fire department": {
-                        receivingUserUID = "other account 3";
-                        break;
-                    }
+            switch (eruTypeOfService) {
+                case "police": {
+                    receivingUserUID = "tHPVJ0QTDCMsufaIEU0X7GnRnrR2";
+                    message.setMessage_recieverID(receivingUserUID);
+                    break;
                 }
 
-            } else {
+                case "ambulance": {
+                    receivingUserUID = "SdYmJRDy31aqy8RFCJ1f8h5ScTL2";
+                    message.setMessage_recieverID(receivingUserUID);
+                    break;
+                }
 
-                final CollectionReference database = FirebaseFirestore.getInstance()
-                        .collection("Messages")
-                        .document(currentUser.getUid())
-                        .collection(receivingUserUID);
+                case "fire department": {
+                    receivingUserUID = "9bg4eHlfvGY99Ql6NATwc9PTR9p2";
+                    message.setMessage_recieverID(receivingUserUID);
+                    break;
+                }
 
-                final CollectionReference reverseDatabase = FirebaseFirestore.getInstance()
-                        .collection("Messages")
-                        .document(receivingUserUID)
-                        .collection(currentUser.getUid());
-
-                final DocumentReference latestMessages = FirebaseFirestore.getInstance()
-                        .collection("Latest_Massages")
-                        .document("latest_messages")
-                        .collection(currentUser.getUid())
-                        .document(receivingUserUID);
-
-                final DocumentReference reverseLatestMessages = FirebaseFirestore.getInstance()
-                        .collection("Latest_Massages")
-                        .document("latest_messages")
-                        .collection(receivingUserUID)
-                        .document(currentUser.getUid());
-
-                final CollectionReference notificationMessages = FirebaseFirestore.getInstance()
-                        .collection("Notification_Massages");
-
-
-                database.add(message)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                database.document(documentReference.getId())
-                                        .update("message_id", documentReference.getId());
-
-                                latestMessages.set(message);
-                                notificationMessages.document(documentReference.getId()).set(message);
-                            }
-                        });
-
-                reverseDatabase.add(message)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                reverseDatabase.document(documentReference.getId())
-                                        .update("message_id", documentReference.getId());
-
-                                reverseLatestMessages.set(message);
-                            }
-                        });
+                case "emergency": {
+                    receivingUserUID = "mxdrUsjYZSe7Ml8wozKyWDySdaN2";
+                    message.setMessage_recieverID(receivingUserUID);
+                    break;
+                }
             }
+
+            final CollectionReference database = FirebaseFirestore.getInstance()
+                    .collection("Messages")
+                    .document(currentUser.getUid())
+                    .collection(receivingUserUID);
+
+            final CollectionReference reverseDatabase = FirebaseFirestore.getInstance()
+                    .collection("Messages")
+                    .document(receivingUserUID)
+                    .collection(currentUser.getUid());
+
+            final DocumentReference latestMessages = FirebaseFirestore.getInstance()
+                    .collection("Latest_Massages")
+                    .document("latest_messages")
+                    .collection(currentUser.getUid())
+                    .document(receivingUserUID);
+
+            final DocumentReference reverseLatestMessages = FirebaseFirestore.getInstance()
+                    .collection("Latest_Massages")
+                    .document("latest_messages")
+                    .collection(receivingUserUID)
+                    .document(currentUser.getUid());
+
+            final CollectionReference notificationMessages = FirebaseFirestore.getInstance()
+                    .collection("Notification_Massages");
+
+
+            database.add(message)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            database.document(documentReference.getId())
+                                    .update("message_id", documentReference.getId());
+
+                            latestMessages.set(message);
+                            notificationMessages.document(documentReference.getId()).set(message);
+                        }
+                    });
+
+            reverseDatabase.add(message)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            reverseDatabase.document(documentReference.getId())
+                                    .update("message_id", documentReference.getId());
+
+                            reverseLatestMessages.set(message);
+                        }
+                    });
+
+//            if (getIntent().hasExtra("eruTypeOfService")) {
+//                String eruTypeOfService = getIntent().getStringExtra("eruTypeOfService");
+//
+//                switch (eruTypeOfService) {
+//                    case "police": {
+//                        message.setMessage_type("police");
+//                        receivingUserUID = "tHPVJ0QTDCMsufaIEU0X7GnRnrR2";
+//                        break;
+//                    }
+//
+//                    case "ambulance": {
+//                        message.setMessage_type("ambulance");
+//                        receivingUserUID = "SdYmJRDy31aqy8RFCJ1f8h5ScTL2";
+//                        break;
+//                    }
+//
+//                    case "fire department": {
+//                        message.setMessage_type("fire department");
+//                        receivingUserUID = "9bg4eHlfvGY99Ql6NATwc9PTR9p2";
+//                        break;
+//                    }
+//
+//                    case "emergency": {
+//                        message.setMessage_type("emergency");
+//                        receivingUserUID = "mxdrUsjYZSe7Ml8wozKyWDySdaN2";
+//                        break;
+//                    }
+//                }
+//
+//                final CollectionReference database = FirebaseFirestore.getInstance()
+//                        .collection("Messages")
+//                        .document(currentUser.getUid())
+//                        .collection(receivingUserUID);
+//
+//                final CollectionReference reverseDatabase = FirebaseFirestore.getInstance()
+//                        .collection("Messages")
+//                        .document(receivingUserUID)
+//                        .collection(currentUser.getUid());
+//
+//                final DocumentReference latestMessages = FirebaseFirestore.getInstance()
+//                        .collection("Latest_Massages")
+//                        .document("latest_messages")
+//                        .collection(currentUser.getUid())
+//                        .document(receivingUserUID);
+//
+//                final DocumentReference reverseLatestMessages = FirebaseFirestore.getInstance()
+//                        .collection("Latest_Massages")
+//                        .document("latest_messages")
+//                        .collection(receivingUserUID)
+//                        .document(currentUser.getUid());
+//
+//                final CollectionReference notificationMessages = FirebaseFirestore.getInstance()
+//                        .collection("Notification_Massages");
+//
+//
+//                database.add(message)
+//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                            @Override
+//                            public void onSuccess(DocumentReference documentReference) {
+//                                database.document(documentReference.getId())
+//                                        .update("message_id", documentReference.getId());
+//
+//                                latestMessages.set(message);
+//                                notificationMessages.document(documentReference.getId()).set(message);
+//                            }
+//                        });
+//
+//                reverseDatabase.add(message)
+//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                            @Override
+//                            public void onSuccess(DocumentReference documentReference) {
+//                                reverseDatabase.document(documentReference.getId())
+//                                        .update("message_id", documentReference.getId());
+//
+//                                reverseLatestMessages.set(message);
+//                            }
+//                        });
+//
+//            } else {
+//
+//                final CollectionReference database = FirebaseFirestore.getInstance()
+//                        .collection("Messages")
+//                        .document(currentUser.getUid())
+//                        .collection(receivingUserUID);
+//
+//                final CollectionReference reverseDatabase = FirebaseFirestore.getInstance()
+//                        .collection("Messages")
+//                        .document(receivingUserUID)
+//                        .collection(currentUser.getUid());
+//
+//                final DocumentReference latestMessages = FirebaseFirestore.getInstance()
+//                        .collection("Latest_Massages")
+//                        .document("latest_messages")
+//                        .collection(currentUser.getUid())
+//                        .document(receivingUserUID);
+//
+//                final DocumentReference reverseLatestMessages = FirebaseFirestore.getInstance()
+//                        .collection("Latest_Massages")
+//                        .document("latest_messages")
+//                        .collection(receivingUserUID)
+//                        .document(currentUser.getUid());
+//
+//                final CollectionReference notificationMessages = FirebaseFirestore.getInstance()
+//                        .collection("Notification_Massages");
+//
+//
+//                database.add(message)
+//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                            @Override
+//                            public void onSuccess(DocumentReference documentReference) {
+//                                database.document(documentReference.getId())
+//                                        .update("message_id", documentReference.getId());
+//
+//                                latestMessages.set(message);
+//                                notificationMessages.document(documentReference.getId()).set(message);
+//                            }
+//                        });
+//
+//                reverseDatabase.add(message)
+//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                            @Override
+//                            public void onSuccess(DocumentReference documentReference) {
+//                                reverseDatabase.document(documentReference.getId())
+//                                        .update("message_id", documentReference.getId());
+//
+//                                reverseLatestMessages.set(message);
+//                            }
+//                        });
+//            }
         }
     }
 

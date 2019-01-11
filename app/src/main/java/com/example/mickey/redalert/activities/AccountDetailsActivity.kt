@@ -602,58 +602,59 @@ class AccountDetailsActivity : AppCompatActivity() {
                     .document("${currentUser!!.uid}")
 
                 database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
-                    if (documentSnapshot!=null)
-                    {
+                    if (documentSnapshot!=null) {
 //                        val user = documentSnapshot.toObject(com.example.mickey.redalert.models.User::class.java)
-                        val arrayListContacts = documentSnapshot.get("user_emergencyContacts") as ArrayList<String>
+                        if (documentSnapshot.get("user_emergencyContacts") != null) {
+                            val arrayListContacts = documentSnapshot.get("user_emergencyContacts") as ArrayList<String>
 
-                        if (arrayListContacts != null) {
-                            val adapter = ArrayAdapter<String>(
-                                this,
-                                R.layout.row_simple_text,
-                                R.id.textView_rowSimpleTextText,
-                                arrayListContacts
-                            )
-                            popupListView.adapter = adapter
-
-
-                            //allows list to open
-                            popupListView.setOnItemClickListener { parent, view, position, id ->
-                                var alertDialog = AlertDialog.Builder(this)
-                                alertDialog.setIcon(R.drawable.ic_info_black_24dp)
-                                alertDialog.setMessage(
-                                    "Do you want to delete \n" +
-                                            "'${popupListView.getItemAtPosition(position)}' from your contacts? "
-                                )
-                                alertDialog.setTitle("CONFIRM DELETE!")
-                                alertDialog.setCancelable(false)
-
-                                alertDialog.setPositiveButton("OK") { dialog, which ->
-                                    arrayListContacts.removeAt(position)
-
-                                    val adapter = ArrayAdapter<String>(
-                                        this,
-                                        R.layout.row_simple_text,
-                                        R.id.textView_rowSimpleTextText,
-                                        arrayListContacts
-                                    )
-                                    popupListView.adapter = adapter
-
-                                    database.update("user_emergencyContacts", arrayListContacts)
-
-                                }
-
-                                alertDialog.setNegativeButton("No!") { dialog, which ->
-                                    dialog.dismiss()
-
-                                }
-
-                                alertDialog.show()
-                                Toast.makeText(
+                            if (!arrayListContacts.isEmpty()) {
+                                val adapter = ArrayAdapter<String>(
                                     this,
-                                    "${popupListView.getItemAtPosition(position)}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                    R.layout.row_simple_text,
+                                    R.id.textView_rowSimpleTextText,
+                                    arrayListContacts
+                                )
+                                popupListView.adapter = adapter
+
+
+                                //allows list to open
+                                popupListView.setOnItemClickListener { parent, view, position, id ->
+                                    var alertDialog = AlertDialog.Builder(this)
+                                    alertDialog.setIcon(R.drawable.ic_info_black_24dp)
+                                    alertDialog.setMessage(
+                                        "Do you want to delete \n" +
+                                                "'${popupListView.getItemAtPosition(position)}' from your contacts? "
+                                    )
+                                    alertDialog.setTitle("CONFIRM DELETE!")
+                                    alertDialog.setCancelable(false)
+
+                                    alertDialog.setPositiveButton("OK") { dialog, which ->
+                                        arrayListContacts.removeAt(position)
+
+                                        val adapter = ArrayAdapter<String>(
+                                            this,
+                                            R.layout.row_simple_text,
+                                            R.id.textView_rowSimpleTextText,
+                                            arrayListContacts
+                                        )
+                                        popupListView.adapter = adapter
+
+                                        database.update("user_emergencyContacts", arrayListContacts)
+
+                                    }
+
+                                    alertDialog.setNegativeButton("No!") { dialog, which ->
+                                        dialog.dismiss()
+
+                                    }
+
+                                    alertDialog.show()
+                                    Toast.makeText(
+                                        this,
+                                        "${popupListView.getItemAtPosition(position)}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         }
                     }else{
@@ -687,20 +688,27 @@ class AccountDetailsActivity : AppCompatActivity() {
                             database.get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
                                 if (task.isSuccessful) {
                                     //do
-                                    val arrayListAllergy =
-                                        task.result!!.get("user_emergencyContacts") as ArrayList<String>
-                                    if (arrayListAllergy != null) {
-                                        if (arrayListAllergy.contains(contactNumber)) {
-                                            errorDialog(
-                                                "'$contactNumber' is already in the\n Contact List!",
-                                                "DUPLICATE ENTRY!"
-                                            )
-                                        } else {
-                                            database.update(
-                                                "user_emergencyContacts",
-                                                FieldValue.arrayUnion(contactNumber)
-                                            )
+                                    if (task.result!!.get("user_emergencyContacts") != null) {
+                                        val arrayListAllergy = task.result!!.get("user_emergencyContacts")
+                                        as ArrayList<String>
+                                        if (arrayListAllergy != null) {
+                                            if (arrayListAllergy.contains(contactNumber)) {
+                                                errorDialog(
+                                                    "'$contactNumber' is already in the\n Contact List!",
+                                                    "DUPLICATE ENTRY!"
+                                                )
+                                            } else {
+                                                database.update(
+                                                    "user_emergencyContacts",
+                                                    FieldValue.arrayUnion(contactNumber)
+                                                )
+                                            }
                                         }
+                                    }else{
+                                        database.update(
+                                            "user_emergencyContacts",
+                                            FieldValue.arrayUnion(contactNumber)
+                                        )
                                     }
                                 } else {
                                     Log.e(TAG, task.exception.toString())

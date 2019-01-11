@@ -102,7 +102,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
-
+            intent.putExtra("eruTypeOfService", "emergency");
             startActivity(intent);
         }
     };

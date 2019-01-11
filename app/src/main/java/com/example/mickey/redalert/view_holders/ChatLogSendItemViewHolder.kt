@@ -21,9 +21,7 @@ class ChatLogSendItemViewHolder(val userPhotoURL: String, val text: String) : It
         }else{
             Picasso.get().load(R.drawable.default_avata).into(profilePicture)
         }
-//        profilePicture.setOnClickListener {
-//
-//        }
-//        message.text = text
+
+        message.text = text
     }
 }

@@ -52,8 +52,8 @@ class LatestMessagesViewHolder(val message: Message): Item<ViewHolder>() {
                                         lastMessage.text = message.message_messageContent
                                     }
 
-                                    "confirm" ->{
-
+                                    "emergency" ->{
+                                        lastMessage.text = message.message_messageContent
                                     }
                                 }
 
@@ -71,7 +71,13 @@ class LatestMessagesViewHolder(val message: Message): Item<ViewHolder>() {
                         if (task.isSuccessful){
                             val document = task.result!!.toObject(User::class.java)
                             if (document != null) {
-                                Picasso.get().load(document.user_profilePictureURL).into(profilePicture)
+
+                                if (document.user_profilePictureURL != "default") {
+                                    Picasso.get().load(document.user_profilePictureURL).into(profilePicture)
+                                }else{
+                                    Picasso.get().load(R.drawable.default_avata).into(profilePicture)
+                                }
+
                                 fullname.text = "${document.user_firstName} ${document.user_lastName}"
                                 lastMessage.text = message.message_messageContent
 

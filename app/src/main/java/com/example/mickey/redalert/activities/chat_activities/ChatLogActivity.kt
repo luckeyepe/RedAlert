@@ -120,7 +120,11 @@ class ChatLogActivity : AppCompatActivity() {
                                 }
 
                                 "emergency" ->{
-
+                                    adapter.add(
+                                        ChatLogSendItemViewHolder(
+                                            sendingUser.user_profilePictureURL.toString(),
+                                            document.message_messageContent!!)
+                                    )
                                 }
                             }
 
@@ -151,8 +155,13 @@ class ChatLogActivity : AppCompatActivity() {
                                 }
 
                                 "emergency" ->{
-
+                                    adapter.add(
+                                        ChatLogRecieveItemViewHolder(
+                                            receivingUser.user_profilePictureURL.toString(),
+                                            document.message_messageContent!!)
+                                    )
                                 }
+
                             }
 
                         }

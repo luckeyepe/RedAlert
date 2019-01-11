@@ -2,6 +2,7 @@ package com.example.mickey.redalert;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
+import com.example.mickey.redalert.activities.chat_activities.ChatLogActivity;
 import com.example.mickey.redalert.models.Message;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -197,7 +199,7 @@ public class current_location_map_fragment extends FragmentActivity implements O
     }
 
     private void sendMessage(String text) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (!text.isEmpty()) {
             final Message message = new Message();
             String receivingUserUID = "";
@@ -264,12 +266,25 @@ public class current_location_map_fragment extends FragmentActivity implements O
             database.add(message)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
-                        public void onSuccess(DocumentReference documentReference) {
+                        public void onSuccess(final DocumentReference documentReference) {
                             database.document(documentReference.getId())
                                     .update("message_id", documentReference.getId());
 
-                            latestMessages.set(message);
-                            notificationMessages.document(documentReference.getId()).set(message);
+                            FirebaseFirestore.getInstance().collection("Users")
+                                    .document(currentUser.getUid())
+                                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    message.setMessage_senderName(""+documentSnapshot.getString("user_firstName")+""+documentSnapshot.getString("user_lastName"));
+                                    latestMessages.set(message);
+                                    notificationMessages.document(documentReference.getId()).set(message);
+                                    Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+//                            latestMessages.set(message);
+//                            notificationMessages.document(documentReference.getId()).set(message);
+//                            Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
                         }
                     });
 

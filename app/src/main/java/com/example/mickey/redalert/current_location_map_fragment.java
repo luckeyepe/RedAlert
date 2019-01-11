@@ -275,7 +275,7 @@ public class current_location_map_fragment extends FragmentActivity implements O
                                     .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    message.setMessage_senderName(""+documentSnapshot.getString("user_firstName")+""+documentSnapshot.getString("user_lastName"));
+                                    message.setMessage_senderName(""+documentSnapshot.getString("user_firstName")+" "+documentSnapshot.getString("user_lastName"));
                                     latestMessages.set(message);
                                     notificationMessages.document(documentReference.getId()).set(message);
                                     Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();

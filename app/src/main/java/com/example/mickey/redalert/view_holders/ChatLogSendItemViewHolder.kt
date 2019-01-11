@@ -15,12 +15,15 @@ class ChatLogSendItemViewHolder(val userPhotoURL: String, val text: String) : It
     override fun bind(viewHolder: ViewHolder, position: Int) {
         val profilePicture = viewHolder.itemView.circleImageView_messageToItemRowProfilePic
         val message = viewHolder.itemView.textView_messageToItemRowMessage
-        Picasso.get().load(userPhotoURL).into(profilePicture)
 
-        profilePicture.setOnClickListener {
-
+        if (userPhotoURL != "default") {
+            Picasso.get().load(userPhotoURL).into(profilePicture)
+        }else{
+            Picasso.get().load(R.drawable.default_avata).into(profilePicture)
         }
-        message.text = text
-
+//        profilePicture.setOnClickListener {
+//
+//        }
+//        message.text = text
     }
 }

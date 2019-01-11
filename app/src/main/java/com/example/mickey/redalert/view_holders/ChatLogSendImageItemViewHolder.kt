@@ -19,7 +19,13 @@ class ChatLogSendImageItemViewHolder(val userPhotoURL: String, val text: String,
         val profilePicture = viewHolder.itemView.circleImageView_messageToImageItemRowProfilePic
         val message = viewHolder.itemView.imageView_messageToImageItemRowImage
         Log.d("ImageMessage", text)
-        Picasso.get().load(userPhotoURL).into(profilePicture)
+
+        if (userPhotoURL != "default") {
+            Picasso.get().load(userPhotoURL).into(profilePicture)
+        }else{
+            Picasso.get().load(R.drawable.default_avata).into(profilePicture)
+        }
+
         if (text.isNullOrEmpty()){
             Picasso.get().load(R.drawable.ic_error_black_24dp).into(message)
         }else {

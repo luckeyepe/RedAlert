@@ -108,7 +108,6 @@ class Signup2Activity : AppCompatActivity() {
                 }
             }
 
-
             dialog = Dialog(this)
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setContentView(popupView)

@@ -50,8 +50,7 @@ class NewMessagesActivity : AppCompatActivity() {
                 adapter.setOnItemClickListener { item, view ->
                     val userItem = item as UsersViewHolder
                     val intent = Intent(view.context, ChatLogActivity::class.java)
-//                    intent.putExtra("receiverName",
-//                        "${userItem.user.user_firstName} ${userItem.user.user_lastName}")
+
                     Log.d("NewMassagesActivity", "User UID: ${userItem.user.user_id.toString()}")
                     //pass on entire user object
                     FirebaseFirestore.getInstance()

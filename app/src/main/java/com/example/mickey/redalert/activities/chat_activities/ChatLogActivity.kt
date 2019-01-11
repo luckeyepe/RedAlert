@@ -87,9 +87,6 @@ class ChatLogActivity : AppCompatActivity() {
                 }
 
                 if (messagesArray.size != 0) {
-//                    //sort arraylist via time stamps
-//                    messagesArray.sortBy { selector(it) }
-
                     for (document in messagesArray) {
                         if (document.message_recieverID == receivingUser.user_id
                             && document.message_senderID == sendingUser.user_id
@@ -103,12 +100,6 @@ class ChatLogActivity : AppCompatActivity() {
                                             sendingUser.user_profilePictureURL.toString(),
                                             document.message_messageContent!!, applicationContext)
                                     )
-
-//                                    adapter.add(
-//                                        ChatLogSendImageItemViewHolder(
-//                                            sendingUser.user_profilePictureURL.toString(),
-//                                            document.message_messageContent!!)
-//                                    )
                                 }
 
                                 "text" ->{
@@ -138,12 +129,6 @@ class ChatLogActivity : AppCompatActivity() {
                                             receivingUser.user_profilePictureURL.toString(),
                                             document.message_messageContent!!, applicationContext)
                                     )
-//                                    adapter.add(
-//                                        ChatLogRecieveImageItemViewHolder(
-//                                            receivingUser.user_profilePictureURL.toString(),
-//                                            document.message_messageContent!!)
-//                                    )
-
                                 }
 
                                 "text" ->{

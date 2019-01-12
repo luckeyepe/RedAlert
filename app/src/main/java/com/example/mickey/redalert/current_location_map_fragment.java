@@ -132,6 +132,7 @@ public class current_location_map_fragment extends FragmentActivity implements O
                                                     + address;
                                             sendMessage(messageToSendEmergency);//for firestore chat
                                             phoneNumberToSend = list.get(counter);
+                                            Log.d("Contacts:", list.get(counter));
                                             SmsManager smsManager = SmsManager.getDefault();
                                             smsManager.sendTextMessage(phoneNumberToSend, null, messageToSendEmergency,
                                                     null, null);
@@ -163,19 +164,32 @@ public class current_location_map_fragment extends FragmentActivity implements O
                                                     null, null);
                                             break;
                                         }
+
+                                        case "emergency":{
+                                            messageToSendEmergency = "I AM " + user.getDisplayName()
+                                                    + " AND I AM IN AN EMERGENCY SITUATION. PLEASE RESPOND IMMEDIATELY! I AM AT "
+                                                    + address;
+                                            sendMessage(messageToSendEmergency);//for firestore chat
+                                            phoneNumberToSend = list.get(counter);
+                                            SmsManager smsManager = SmsManager.getDefault();
+                                            smsManager.sendTextMessage(phoneNumberToSend, null, messageToSendEmergency,
+                                                    null, null);
+                                            break;
+                                        }
                                     }
 
-                                } else {
-                                    //Log.e(" CONTAIN", list.toString());
-                                    messageToSendEmergency = "I AM " + user.getDisplayName()
-                                            + " AND I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY! I AM AT "
-                                            + address;
-                                    sendMessage(messageToSendEmergency);//for firestore chat
-                                    phoneNumberToSend = list.get(counter);
-                                    SmsManager smsManager = SmsManager.getDefault();
-                                    smsManager.sendTextMessage(phoneNumberToSend, null, messageToSendEmergency,
-                                            null, null);
                                 }
+// else {
+//                                    //Log.e(" CONTAIN", list.toString());
+//                                    messageToSendEmergency = "I AM " + user.getDisplayName()
+//                                            + " AND I AM IN AN EMERGENCY SITUATION PLEASE RESPOND IMMEDIATELY! I AM AT "
+//                                            + address;
+//                                    sendMessage(messageToSendEmergency);//for firestore chat
+//                                    phoneNumberToSend = list.get(counter);
+//                                    SmsManager smsManager = SmsManager.getDefault();
+//                                    smsManager.sendTextMessage(phoneNumberToSend, null, messageToSendEmergency,
+//                                            null, null);
+//                                }
                             }
 
                         }

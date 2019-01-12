@@ -46,6 +46,7 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(dashboardIntent)
                     finish()
                 }else{
+                    Log.e("Login Error",task.exception.toString())
                     Log.d("LogIn", "Email: $email, Password: $password")
                     Toast.makeText(this, "User does not exist", Toast.LENGTH_LONG).show()
                 }

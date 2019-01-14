@@ -1,12 +1,13 @@
 package com.example.mickey.redalert.activities
 
 import android.app.DatePickerDialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.annotation.RequiresApi
-import android.support.v7.app.AlertDialog
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import android.text.TextUtils.isEmpty
 import android.util.Log
 import android.widget.Toast
@@ -25,6 +26,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.text.DateFormat
 import android.widget.DatePicker
+import com.google.firebase.auth.UserProfileChangeRequest
 
 class SignupActivity : AppCompatActivity() {
     val TAG = "SignupActivity"
@@ -45,8 +47,6 @@ class SignupActivity : AppCompatActivity() {
         }
 
         btn_signupNext.setOnClickListener {
-
-
             if (isCompleteData()){
                 var user = User()
                 user.user_email = edt_signupEmail.text.toString().trim()
@@ -86,19 +86,37 @@ class SignupActivity : AppCompatActivity() {
                 && !edt_signupBirthDate.text.toString().trim().isNullOrEmpty() && !edt_signupPassword.text.toString().trim().isNullOrEmpty())
 
     private fun createAccount(user: User, password: String) {
+        val progress = ProgressDialog(this)
+        progress.setTitle("Loading")
+        progress.setMessage("Please wait while loading...")
+        progress.show()
+
         mAuth!!.createUserWithEmailAndPassword(user.user_email!!, password)
             .addOnCompleteListener{
                     task: Task<AuthResult> ->
                 if (task.isSuccessful){
-                    var currentUserId = mAuth!!.currentUser!!.uid
-                    Log.d(TAG, "the current user id is $currentUserId")
+                    var currentUser = mAuth!!.currentUser
+                    Log.d(TAG, "the current user id is ${currentUser!!.uid}")
+                    user.user_id = currentUser.uid
 
-                    mDatabase = FirebaseFirestore.getInstance().collection("Client")
-                        .document(currentUserId)
+                    mDatabase = FirebaseFirestore.getInstance().collection("Users")
+                        .document(currentUser!!.uid)
                     mDatabase!!.set(user)
                         .addOnCompleteListener {
                             task: Task<Void> ->
                             if (task.isSuccessful){
+                                val profileUpdates = UserProfileChangeRequest.Builder()
+                                    .setDisplayName("${user.user_firstName} ${user.user_lastName}")
+                                    .build()
+
+                                if (currentUser != null) {
+                                    currentUser.updateProfile(profileUpdates)
+                                        ?.addOnCompleteListener { task ->
+                                            if (task.isSuccessful) {
+                                                Log.d(TAG, "User profile updated.")
+                                            }
+                                        }
+                                }
 
                                 var alertDialog = AlertDialog.Builder(this)
                                 alertDialog.setMessage("Success")
@@ -106,6 +124,7 @@ class SignupActivity : AppCompatActivity() {
                                 alertDialog.show()
                                 var signup2 = Intent(this, Signup2Activity::class.java)
                                 startActivity(signup2)
+                                progress.dismiss()
                                 finish()
                             }else{
                                 Log.e("$TAG Error", task.exception.toString())
@@ -113,24 +132,9 @@ class SignupActivity : AppCompatActivity() {
                                 alertDialog.setMessage("An error occurred during sign up.\n Please try again later")
                                 alertDialog.setTitle("SIGN UP ERROR")
                                 alertDialog.show()
+                                progress.dismiss()
                             }
                         }
-
-//                    mDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
-//
-//                    mDatabase!!.setValue(user).addOnCompleteListener {
-//                            task: Task<Void> ->
-//                        if (task.isSuccessful){
-//                            Toast.makeText(this, "User Created", Toast.LENGTH_LONG).show()
-//
-//                            var signup2 = Intent(this, Signup2Activity::class.java)
-//                            startActivity(signup2)
-//                            finish()
-//                        }
-//                        else{
-//                            Toast.makeText(this, "User not Created", Toast.LENGTH_LONG).show()
-//                        }
-//                    }
                 }
                 else{
                     Toast.makeText(this, "User already Created", Toast.LENGTH_LONG).show()

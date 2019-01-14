@@ -1,7 +1,7 @@
 package com.example.mickey.redalert.activities
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -46,6 +46,8 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(dashboardIntent)
                     finish()
                 }else{
+                    Log.e("Login Error",task.exception.toString())
+                    Log.d("LogIn", "Email: $email, Password: $password")
                     Toast.makeText(this, "User does not exist", Toast.LENGTH_LONG).show()
                 }
             }

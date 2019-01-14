@@ -6,9 +6,9 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,11 +30,14 @@ import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_account_details.*
+import kotlinx.android.synthetic.main.activity_signup.*
 import kotlinx.android.synthetic.main.popup_allergy_update.view.*
 import kotlinx.android.synthetic.main.popup_blood_type.view.*
 import kotlinx.android.synthetic.main.popup_change_password.view.*
 import kotlinx.android.synthetic.main.popup_emergency_contacts_update.view.*
 import kotlinx.android.synthetic.main.popup_update_account_details_part_1.view.*
+import java.sql.Timestamp
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -49,7 +53,7 @@ class AccountDetailsActivity : AppCompatActivity() {
 
         //grab data
         var currentUser = FirebaseAuth.getInstance().currentUser
-        var database = FirebaseFirestore.getInstance().collection("Client").document(currentUser!!.uid)
+        var database = FirebaseFirestore.getInstance().collection("Users").document(currentUser!!.uid)
 
         val progress = ProgressDialog(this)
 
@@ -77,7 +81,8 @@ class AccountDetailsActivity : AppCompatActivity() {
                             textView_accountDetailsIsOrganDonor.text = "No"
                         }
 
-                        textView_accountDetailsFullName.text = "${user.user_lastName}, ${user.user_firstName}"
+                        textView_accountDetailsFullName.text = "${user.user_firstName} ${user.user_lastName}"
+//                        textView_accountDetailsFullName.text = currentUser.displayName.toString()
                         textView_accountDetailsAddress.text = user.user_address
                         textView_accountDetailsContactNumber.text = user.user_contactNumber.toString()
                         var dateOfBirth = user.user_birthDate
@@ -125,79 +130,10 @@ class AccountDetailsActivity : AppCompatActivity() {
                 Log.e(TAG, firebaseFirestoreException.toString())
             }
         }
-//            .addOnCompleteListener {
-//                task: Task<DocumentSnapshot> ->
-//                if (task.isSuccessful){
-//                    val user = task.result!!.toObject(com.example.mickey.redalert.models.User::class.java)
-//
-//                    if (user!=null) {
-//                        //occupy textviews
-//                        textView_accountDetailsBloodType.text = user.user_bloodType
-//
-//                        if (user.user_gender == "M") {
-//                            textView_accountDetailsGender.text = "Male"
-//                        } else {
-//                            textView_accountDetailsGender.text = "Female"
-//                        }
-//
-//                        if (user.user_isOrganDonor == true){
-//                            textView_accountDetailsIsOrganDonor.text = "Yes"
-//                        }else{
-//                            textView_accountDetailsIsOrganDonor.text = "No"
-//                        }
-//
-//                        textView_accountDetailsFullName.text = "${user.user_lastName}, ${user.user_firstName}"
-//                        textView_accountDetailsAddress.text = user.user_address
-//                        textView_accountDetailsContactNumber.text = user.user_contactNumber.toString()
-//                        var dateOfBirth = user.user_birthDate
-//                        val formatter = SimpleDateFormat("MM/dd/yyyy")
-//                        textView_accountDetailsDateOfBirth.text = formatter.format(dateOfBirth)
-//
-//                        //put emergency contacts into list view
-//                        val arrayList = user.user_emergencyContacts
-//
-//                        if (arrayList != null) {
-//                            val adapter = ArrayAdapter<String>(
-//                                this,
-//                                R.layout.row_simple_text,
-//                                R.id.textView_rowSimpleTextText,
-//                                arrayList
-//                            )
-//                            listView_accountDetailsEmergencyContacts.adapter = adapter
-//                        }
-//
-//                        //put allergies into list view
-//                        val arrayListAllergies = user.user_allergies
-//
-//                        if (arrayListAllergies != null) {
-//                            val adapter = ArrayAdapter<String>(
-//                                this,
-//                                R.layout.row_simple_text,
-//                                R.id.textView_rowSimpleTextText,
-//                                arrayListAllergies
-//                            )
-//                            listView_accountDetailsAllergies.adapter = adapter
-//                        }
-//
-//                        //load up user profile picture
-//                        if(user.user_profilePictureURL == "default"){
-//                            Picasso.get().load(R.drawable.default_avata)
-//                                .into(circleImageView_acountDetailsProfilePicture)
-//                        }else {
-//                            Picasso.get().load(user.user_profilePictureURL)
-//                                .into(circleImageView_acountDetailsProfilePicture)
-//                        }
-//                        progress.dismiss()
-//                    }
-//
-//                }else{
-//                    //todo popup error that no data exists
-//                }
-//            }
 
         //update profile picture
         circleImageView_acountDetailsProfilePicture.setOnClickListener {
-            var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+            var alertDialog = androidx.appcompat.app.AlertDialog.Builder(this)
             alertDialog.setMessage("Do you want to update your profile picture?")
             alertDialog.setCancelable(false)
             alertDialog.setTitle("UPDATE PHOTO")
@@ -218,7 +154,7 @@ class AccountDetailsActivity : AppCompatActivity() {
         }
 
         button_accountDetailsUpdatePassword.setOnClickListener {
-            var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+            var alertDialog = androidx.appcompat.app.AlertDialog.Builder(this)
             alertDialog.setMessage("Do you want to change your password?")
             alertDialog.setCancelable(false)
             alertDialog.setTitle("CHANGE PASSWORD")
@@ -234,9 +170,9 @@ class AccountDetailsActivity : AppCompatActivity() {
                 var popupUpdateButton = popupView.button_popupChangePasswordUpdate
 
                 popupUpdateButton.setOnClickListener {
-                    if (!popupEditTextOldPassword.text.toString().trim().isNullOrEmpty()
-                        &&!popupEditTextNewPassword.text.toString().trim().isNullOrEmpty()
-                        && !popupEditTextConfirmPassword.text.toString().trim().isNullOrEmpty()) {
+                    if (!popupEditTextOldPassword.text.toString().trim().isEmpty()
+                        &&!popupEditTextNewPassword.text.toString().trim().isEmpty()
+                        && !popupEditTextConfirmPassword.text.toString().trim().isEmpty()) {
                         val currentUser = FirebaseAuth.getInstance().currentUser
                         val oldPassword = popupEditTextOldPassword.text.toString().trim()
                         val credential = EmailAuthProvider.getCredential(currentUser!!.email.toString(), oldPassword)
@@ -285,27 +221,27 @@ class AccountDetailsActivity : AppCompatActivity() {
 
         button_accountDetailsUpdateInfo.setOnClickListener {
             //todo popup the update account detail xml
-            var dialog = Dialog(this)
-            var popupView = LayoutInflater.from(this).inflate(R.layout.popup_update_account_details_part_1, null)
+            val dialog = Dialog(this)
+            val popupView = LayoutInflater.from(this).inflate(R.layout.popup_update_account_details_part_1, null)
 
-            var popupEditTextLastName = popupView.editText_popupUpdateAccountDetailsLastName
-            var popupEditTextFirstName = popupView.editText_popupUpdateAccountDetailsFirstName
-            var popupEditTextAddress = popupView.editText_popupUpdateAccountDetailsAddress
-            var popupEditTextContactNumber = popupView.editText_popupUpdateAccountDetailsContactNumber
-            var popupEditTextBirthDate = popupView.editText_popupUpdateAccountDetailsBirthdate
-            var popupRadioGroupGender = popupView.radioGroup_popupUpdateAccountDetailsGender
-            var popupRadioButtonMale = popupView.radioButton_popupUpdateAccountDetailsMale
-            var popupRadioButtonFemale = popupView.radioButton_popupUpdateAccountDetailsFemale
-            var popupRadioGroupOrganDonor = popupView.radioGroup_popupUpdateAccountDetailsOrganDonor
-            var popupRadioButtonYes = popupView.radioButton_popupUpdateAccountDetailsOrganDonorYes
-            var popupRadioButtonNo = popupView.radioButton_popupUpdateAccountDetailsOrganDonorNo
-            var popupEditTextBloodType = popupView.editText_popupUpdateAccountDetailsBloodType
-            var popupListViewEmergencyContacts = popupView.listView_popupUpdateAccountDetailsEmergencyContacts
-            var popupListViewAllergies = popupView.listView_popupUpdateAccountDetailsAllergies
-            var popupButtonCancel = popupView.button_popupUpdateAccountDetailsCancel
-            var popupButtonUpdate = popupView.button_popupUpdateAccountDetailsUpdate
-            var popupImageViewEditAllergies = popupView.imageView_popupUpdateAccountDetailsEditAllergies
-            var popupImageViewEditEmergencyContacts = popupView.imageView_popupUpdateAccountDetailsEditEmergencyContacts
+            val popupEditTextLastName = popupView.editText_popupUpdateAccountDetailsLastName
+            val popupEditTextFirstName = popupView.editText_popupUpdateAccountDetailsFirstName
+            val popupEditTextAddress = popupView.editText_popupUpdateAccountDetailsAddress
+            val popupEditTextContactNumber = popupView.editText_popupUpdateAccountDetailsContactNumber
+            val popupEditTextBirthDate = popupView.editText_popupUpdateAccountDetailsBirthdate
+            val popupRadioGroupGender = popupView.radioGroup_popupUpdateAccountDetailsGender
+            val popupRadioButtonMale = popupView.radioButton_popupUpdateAccountDetailsMale
+            val popupRadioButtonFemale = popupView.radioButton_popupUpdateAccountDetailsFemale
+            val popupRadioGroupOrganDonor = popupView.radioGroup_popupUpdateAccountDetailsOrganDonor
+            val popupRadioButtonYes = popupView.radioButton_popupUpdateAccountDetailsOrganDonorYes
+            val popupRadioButtonNo = popupView.radioButton_popupUpdateAccountDetailsOrganDonorNo
+            val popupEditTextBloodType = popupView.editText_popupUpdateAccountDetailsBloodType
+            val popupListViewEmergencyContacts = popupView.listView_popupUpdateAccountDetailsEmergencyContacts
+            val popupListViewAllergies = popupView.listView_popupUpdateAccountDetailsAllergies
+            val popupButtonCancel = popupView.button_popupUpdateAccountDetailsCancel
+            val popupButtonUpdate = popupView.button_popupUpdateAccountDetailsUpdate
+            val popupImageViewEditAllergies = popupView.imageView_popupUpdateAccountDetailsEditAllergies
+            val popupImageViewEditEmergencyContacts = popupView.imageView_popupUpdateAccountDetailsEditEmergencyContacts
 
             popupEditTextBirthDate.isFocusable = false
             popupEditTextBirthDate.isClickable = true
@@ -314,7 +250,7 @@ class AccountDetailsActivity : AppCompatActivity() {
 
             //fill up data
             val currentUser = FirebaseAuth.getInstance().currentUser
-            val database = FirebaseFirestore.getInstance().collection("Client").document(currentUser!!.uid)
+            val database = FirebaseFirestore.getInstance().collection("Users").document(currentUser!!.uid)
 
             database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                if (documentSnapshot!=null)
@@ -403,92 +339,6 @@ class AccountDetailsActivity : AppCompatActivity() {
                }
             }
 
-//            database.get()
-//                .addOnCompleteListener {
-//                task: Task<DocumentSnapshot> ->
-//                    if (task.isSuccessful){
-//                        val user = task.result!!.toObject(User::class.java)
-//
-//                        if (user!=null){
-//                            popupEditTextLastName.setText(user.user_lastName)
-//                            popupEditTextFirstName.setText(user.user_firstName)
-//                            popupEditTextAddress.setText(user.user_address)
-//                            popupEditTextContactNumber.setText(user.user_contactNumber)
-//
-//                            //date of birth
-//                            var dateOfBirth = user.user_birthDate
-//                            val formatter = SimpleDateFormat("MM/dd/yyyy")
-//                            popupEditTextBirthDate.setText(formatter.format(dateOfBirth))
-//
-//                            //gender
-//                            if(user.user_gender == "M"){
-//                                popupRadioButtonMale.isChecked = true
-//                            }else{
-//                                popupRadioButtonFemale.isChecked = true
-//                            }
-//
-//                            //organ donor
-//                            if(user.user_isOrganDonor == true){
-//                                popupRadioButtonYes.isChecked = true
-//                            }else{
-//                                popupRadioButtonNo.isChecked = true
-//                            }
-//
-//                            popupEditTextBloodType.setText(user.user_bloodType)
-//
-//                            //put emergency contacts into list view
-//                            val arrayList = user.user_emergencyContacts
-//
-//                            if (arrayList != null) {
-//                                val adapter = ArrayAdapter<String>(
-//                                    this,
-//                                    R.layout.row_simple_text,
-//                                    R.id.textView_rowSimpleTextText,
-//                                    arrayList
-//                                )
-//
-//                                //dynamic change of listview hight
-//                                if (arrayList.size > 1){
-//                                    popupListViewEmergencyContacts.layoutParams.height = 95
-//                                }
-//                                popupListViewEmergencyContacts.adapter = adapter
-//                            }
-//
-//                            //allows emergency listview to scroll
-//                            popupListViewEmergencyContacts.setOnTouchListener { v, event ->
-//                                v.parent.requestDisallowInterceptTouchEvent(true)
-//                                return@setOnTouchListener false
-//                            }
-//
-//                            //put allergies into list view
-//                            val arrayListAllergies = user.user_allergies
-//
-//                            if (arrayListAllergies != null) {
-//                                val adapter = ArrayAdapter<String>(
-//                                    this,
-//                                    R.layout.row_simple_text,
-//                                    R.id.textView_rowSimpleTextText,
-//                                    arrayListAllergies
-//                                )
-//
-//                                //dynamic change of listview hight
-//                                if (arrayListAllergies.size > 1){
-//                                    popupListViewAllergies.layoutParams.height = 95
-//                                }
-//                                popupListViewAllergies.adapter = adapter
-//                            }
-//
-//                            //allows emergency listview to scroll
-//                            popupListViewAllergies.setOnTouchListener { v, event ->
-//                                v.parent.requestDisallowInterceptTouchEvent(true)
-//                                return@setOnTouchListener false
-//                            }
-//
-//                        }
-//                    }
-//            }
-
-
             //date time picker popup
             popupEditTextBirthDate.setOnClickListener {
                 val c = Calendar.getInstance()
@@ -499,7 +349,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                 val dpd =
                     DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                         // Display Selected date in textbox
-                        var date = "${monthOfYear + 1}/$dayOfMonth/$year"
+                        val date = "${monthOfYear + 1}/$dayOfMonth/$year"
                         popupEditTextBirthDate.setText(date)
                     }, year, month, day)
                 dpd.show()
@@ -611,7 +461,6 @@ class AccountDetailsActivity : AppCompatActivity() {
 
             //popup edit allergies
             popupImageViewEditAllergies.setOnClickListener {
-                //todo popup edit allergies
                 Toast.makeText(this, "Popup Edit Allergies", Toast.LENGTH_SHORT).show()
                 var dialogAllergyUpdate: Dialog?
                 var popupView = LayoutInflater.from(this).inflate(R.layout.popup_allergy_update, null)
@@ -624,8 +473,8 @@ class AccountDetailsActivity : AppCompatActivity() {
                 //fill in data
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val database = FirebaseFirestore.getInstance()
-                    .collection("Client")
-                    .document("${currentUser!!.uid}")
+                    .collection("Users")
+                    .document(currentUser!!.uid)
 
                 database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                     if (documentSnapshot!=null)
@@ -700,11 +549,11 @@ class AccountDetailsActivity : AppCompatActivity() {
                 popupButtonAdd.setOnClickListener {
                     val currentUser = FirebaseAuth.getInstance().currentUser
                     val database = FirebaseFirestore.getInstance()
-                        .collection("Client")
+                        .collection("Users")
                         .document("${currentUser!!.uid}")
                     val allergy = popupEditTextAllergy.text.toString().trim()
 
-                    if (allergy.isNullOrEmpty())
+                    if (allergy.isEmpty())
                     {
                         errorDialog("Please Enter Allergy!", "MISSING DATA!")
                     }else{
@@ -734,7 +583,6 @@ class AccountDetailsActivity : AppCompatActivity() {
 
             //popup edit emergency contacts
             popupImageViewEditEmergencyContacts.setOnClickListener {
-                //todo popup edit emergency contacts
                 Toast.makeText(this, "Popup edit contacts", Toast.LENGTH_SHORT).show()
                 var dialogEmergencyContacts: Dialog?
                 var popupView = LayoutInflater.from(this).inflate(R.layout.popup_emergency_contacts_update, null)
@@ -748,62 +596,63 @@ class AccountDetailsActivity : AppCompatActivity() {
                 //fill in data
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val database = FirebaseFirestore.getInstance()
-                    .collection("Client")
-                    .document("${currentUser!!.uid}")
+                    .collection("Users")
+                    .document(currentUser!!.uid)
 
                 database.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
-                    if (documentSnapshot!=null)
-                    {
-//                        val user = documentSnapshot.toObject(com.example.mickey.redalert.models.User::class.java)
-                        val arrayListContacts = documentSnapshot.get("user_emergencyContacts") as ArrayList<String>
+                    if (documentSnapshot!=null) {
 
-                        if (arrayListContacts != null) {
-                            val adapter = ArrayAdapter<String>(
-                                this,
-                                R.layout.row_simple_text,
-                                R.id.textView_rowSimpleTextText,
-                                arrayListContacts
-                            )
-                            popupListView.adapter = adapter
+                        if (documentSnapshot.get("user_emergencyContacts") != null) {
+                            val arrayListContacts = documentSnapshot.get("user_emergencyContacts") as ArrayList<String>
 
-
-                            //allows list to open
-                            popupListView.setOnItemClickListener { parent, view, position, id ->
-                                var alertDialog = AlertDialog.Builder(this)
-                                alertDialog.setIcon(R.drawable.ic_info_black_24dp)
-                                alertDialog.setMessage(
-                                    "Do you want to delete \n" +
-                                            "'${popupListView.getItemAtPosition(position)}' from your contacts? "
-                                )
-                                alertDialog.setTitle("CONFIRM DELETE!")
-                                alertDialog.setCancelable(false)
-
-                                alertDialog.setPositiveButton("OK") { dialog, which ->
-                                    arrayListContacts.removeAt(position)
-
-                                    val adapter = ArrayAdapter<String>(
-                                        this,
-                                        R.layout.row_simple_text,
-                                        R.id.textView_rowSimpleTextText,
-                                        arrayListContacts
-                                    )
-                                    popupListView.adapter = adapter
-
-                                    database.update("user_emergencyContacts", arrayListContacts)
-
-                                }
-
-                                alertDialog.setNegativeButton("No!") { dialog, which ->
-                                    dialog.dismiss()
-
-                                }
-
-                                alertDialog.show()
-                                Toast.makeText(
+                            if (!arrayListContacts.isEmpty()) {
+                                val adapter = ArrayAdapter<String>(
                                     this,
-                                    "${popupListView.getItemAtPosition(position)}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                    R.layout.row_simple_text,
+                                    R.id.textView_rowSimpleTextText,
+                                    arrayListContacts
+                                )
+                                popupListView.adapter = adapter
+
+
+                                //allows list to open
+                                popupListView.setOnItemClickListener { parent, view, position, id ->
+                                    var alertDialog = AlertDialog.Builder(this)
+                                    alertDialog.setIcon(R.drawable.ic_info_black_24dp)
+                                    alertDialog.setMessage(
+                                        "Do you want to delete \n" +
+                                                "'${popupListView.getItemAtPosition(position)}' from your contacts? "
+                                    )
+                                    alertDialog.setTitle("CONFIRM DELETE!")
+                                    alertDialog.setCancelable(false)
+
+                                    alertDialog.setPositiveButton("OK") { dialog, which ->
+                                        arrayListContacts.removeAt(position)
+
+                                        val adapter = ArrayAdapter<String>(
+                                            this,
+                                            R.layout.row_simple_text,
+                                            R.id.textView_rowSimpleTextText,
+                                            arrayListContacts
+                                        )
+                                        popupListView.adapter = adapter
+
+                                        database.update("user_emergencyContacts", arrayListContacts)
+
+                                    }
+
+                                    alertDialog.setNegativeButton("No!") { dialog, which ->
+                                        dialog.dismiss()
+
+                                    }
+
+                                    alertDialog.show()
+                                    Toast.makeText(
+                                        this,
+                                        "${popupListView.getItemAtPosition(position)}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         }
                     }else{
@@ -825,11 +674,11 @@ class AccountDetailsActivity : AppCompatActivity() {
                 popupButtonAdd.setOnClickListener {
                     val currentUser = FirebaseAuth.getInstance().currentUser
                     val database = FirebaseFirestore.getInstance()
-                        .collection("Client")
-                        .document("${currentUser!!.uid}")
+                        .collection("Users")
+                        .document(currentUser!!.uid)
                     val contactNumber = popupEditTextContact.text.toString().trim()
 
-                    if (contactNumber.isNullOrEmpty())
+                    if (contactNumber.isEmpty())
                     {
                         errorDialog("Please Enter Contact Number!", "MISSING DATA!")
                     }else {
@@ -837,20 +686,27 @@ class AccountDetailsActivity : AppCompatActivity() {
                             database.get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
                                 if (task.isSuccessful) {
                                     //do
-                                    val arrayListAllergy =
-                                        task.result!!.get("user_emergencyContacts") as ArrayList<String>
-                                    if (arrayListAllergy != null) {
-                                        if (arrayListAllergy.contains(contactNumber)) {
-                                            errorDialog(
-                                                "'$contactNumber' is already in the\n Contact List!",
-                                                "DUPLICATE ENTRY!"
-                                            )
-                                        } else {
-                                            database.update(
-                                                "user_emergencyContacts",
-                                                FieldValue.arrayUnion(contactNumber)
-                                            )
+                                    if (task.result!!.get("user_emergencyContacts") != null) {
+                                        val arrayListAllergy = task.result!!.get("user_emergencyContacts")
+                                        as ArrayList<String>
+                                        if (arrayListAllergy != null) {
+                                            if (arrayListAllergy.contains(contactNumber)) {
+                                                errorDialog(
+                                                    "'$contactNumber' is already in the\n Contact List!",
+                                                    "DUPLICATE ENTRY!"
+                                                )
+                                            } else {
+                                                database.update(
+                                                    "user_emergencyContacts",
+                                                    FieldValue.arrayUnion(contactNumber)
+                                                )
+                                            }
                                         }
+                                    }else{
+                                        database.update(
+                                            "user_emergencyContacts",
+                                            FieldValue.arrayUnion(contactNumber)
+                                        )
                                     }
                                 } else {
                                     Log.e(TAG, task.exception.toString())
@@ -863,6 +719,76 @@ class AccountDetailsActivity : AppCompatActivity() {
                     }
 
                 }
+            }
+
+            popupButtonUpdate.setOnClickListener {
+                var currentUser = FirebaseAuth.getInstance().currentUser
+                Log.d(TAG, "the current user id is ${currentUser!!.uid}")
+                //
+                val firstName = popupEditTextFirstName.text.toString().trim()
+                val lastName = popupEditTextLastName.text.toString().trim()
+                val address = popupEditTextAddress.text.toString().trim()
+                val contactNumber = popupEditTextContactNumber.text.toString().trim()
+
+                val stringDate = popupEditTextBirthDate.text.toString().trim()
+                val formatter: DateFormat
+                val date: Date
+                formatter = SimpleDateFormat("MM/dd/yyyy")
+                date = formatter.parse(stringDate)
+                val timeStampDate = Timestamp(date.time)
+
+                val birthDate = timeStampDate
+                val bloodType = popupEditTextBloodType.text.toString().trim()
+                var gender = ""
+
+                gender = if (popupRadioGroupGender.checkedRadioButtonId == popupRadioButtonMale.id){
+                    "M"
+                }else{
+                    "F"
+                }
+
+                var organDonor = false
+                organDonor = popupRadioGroupOrganDonor.checkedRadioButtonId == popupRadioButtonYes.id
+
+                if (!firstName.isEmpty() && !lastName.isEmpty() && !address.isEmpty() && !contactNumber.isEmpty()){
+                    val progress = ProgressDialog(this)
+
+                    progress.setTitle("Please Wait")
+                    progress.setMessage("Updating your personal data...")
+                    progress.setCancelable(false) // disable dismiss by tapping outside of the dialog
+                    progress.show()
+                    //todo update info
+                    database.update(
+                        "user_firstName", firstName,
+                        "user_lastName", lastName,
+                        "user_address", address,
+                        "user_contactNumber", contactNumber,
+                        "user_birthDate", birthDate,
+                        "user_bloodType", bloodType,
+                        "user_gender", gender,
+                        "user_isOrganDonor", organDonor
+                    ).addOnCompleteListener {
+                        task: Task<Void> ->
+                        if (task.isSuccessful){
+                            val profileUpdates = UserProfileChangeRequest.Builder()
+                                .setDisplayName("$firstName $lastName")
+                                .build()
+
+                            if (currentUser != null) {
+                                currentUser.updateProfile(profileUpdates)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            Log.d(TAG, "User profile updated.")
+                                            progress.dismiss()
+                                            successDialog("UPDATE SUCCESS", "User information is now up to date")
+                                        }
+                                    }
+                            }
+
+                        }
+                    }
+                }
+
             }
 
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -990,7 +916,7 @@ class AccountDetailsActivity : AppCompatActivity() {
                 val mCurrentUser = FirebaseAuth.getInstance().currentUser
                 var userID = mCurrentUser!!.uid
 
-                var database = FirebaseFirestore.getInstance().collection("Client").document(userID)
+                var database = FirebaseFirestore.getInstance().collection("Users").document(userID)
                 mStorage = FirebaseStorage.getInstance().reference
 
                 var thumbnailPath = mStorage!!.child("user_profPic").child("$userID.jpg")

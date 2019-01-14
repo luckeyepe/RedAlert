@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "110816874-mul7ti93ukfhvdncqtg397q492ls84qq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mickey.redalert",
+            "certificate_hash": "432f8eb419a4d160503b4d939c3867f6c5360435"
+          }
+        },
+        {
           "client_id": "110816874-8lto4n3bmb7dtpo5v46ak6ek2klc3e4d.apps.googleusercontent.com",
           "client_type": 3
         }

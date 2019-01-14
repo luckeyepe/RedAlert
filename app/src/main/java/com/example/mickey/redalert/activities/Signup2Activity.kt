@@ -2,9 +2,9 @@ package com.example.mickey.redalert.activities
 
 import android.app.Dialog
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
@@ -108,7 +108,6 @@ class Signup2Activity : AppCompatActivity() {
                 }
             }
 
-
             dialog = Dialog(this)
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setContentView(popupView)
@@ -145,12 +144,13 @@ class Signup2Activity : AppCompatActivity() {
     }
 
     private fun addAdditionalInfo(user: User, allergyString: String) {
-        mDatabase = FirebaseFirestore.getInstance().collection("Client").document(user.user_id!!)
+        mDatabase = FirebaseFirestore.getInstance().collection("Users").document(user.user_id!!)
         var userAddedDetails = HashMap<String, Any>()
         userAddedDetails["user_bloodType"] = user.user_bloodType!!
         userAddedDetails["user_gender"] = user.user_gender!!
         userAddedDetails["user_isOrganDonor"] = user.user_isOrganDonor!!
         userAddedDetails["user_allergies"] = allergyString.split(", ")
+        userAddedDetails["user_isEru"] = false
 
         mDatabase!!.update(userAddedDetails)
             .addOnCompleteListener {

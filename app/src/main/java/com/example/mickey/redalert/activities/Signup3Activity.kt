@@ -5,7 +5,7 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Window
@@ -66,7 +66,7 @@ class Signup3Activity : AppCompatActivity() {
 
                             arrayList.add(popupEditTextPhoneNumber.text.toString().trim())
                             var database = FirebaseFirestore.getInstance()
-                                .collection("Client")
+                                .collection("Users")
                                 .document(mCurrentUser!!.uid)
 
                             //update the current list
@@ -99,14 +99,14 @@ class Signup3Activity : AppCompatActivity() {
                                 }
                         }else{
                             //todo popup error that contact number already exists
-                            var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+                            var alertDialog = androidx.appcompat.app.AlertDialog.Builder(this)
                             alertDialog.setMessage("That contact number is already in the list")
                             alertDialog.setTitle("DUPLICATE CONTACT NUMBER")
                             alertDialog.show()
                         }
                     }else{
                         //todo popup error contact number is to short
-                        var alertDialog = android.support.v7.app.AlertDialog.Builder(this)
+                        var alertDialog = androidx.appcompat.app.AlertDialog.Builder(this)
                         alertDialog.setMessage("That contact number is not valid")
                         alertDialog.setTitle("INVALID CONTACT NUMBER")
                         alertDialog.show()
@@ -139,7 +139,7 @@ class Signup3Activity : AppCompatActivity() {
 
     private fun fillUpListView() {
         var database = FirebaseFirestore.getInstance()
-            .collection("Client")
+            .collection("Users")
             .document(mCurrentUser!!.uid)
 
         //get the contacts list
@@ -187,7 +187,7 @@ class Signup3Activity : AppCompatActivity() {
                 mCurrentUser = FirebaseAuth.getInstance().currentUser
                 var userID = mCurrentUser!!.uid
 
-                var database = FirebaseFirestore.getInstance().collection("Client").document(userID)
+                var database = FirebaseFirestore.getInstance().collection("Users").document(userID)
                 mStorage = FirebaseStorage.getInstance().reference
 
                 var thumbnailPath = mStorage!!.child("user_profPic").child("$userID.jpg")

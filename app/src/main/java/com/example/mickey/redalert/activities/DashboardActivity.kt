@@ -3,7 +3,7 @@ package com.example.mickey.redalert.activities
 import android.app.AlertDialog
 import android.app.Notification
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_dashboard.*
+
 
 class DashboardActivity : AppCompatActivity() {
     var alertDialog: AlertDialog.Builder ?= null
@@ -270,7 +271,6 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         super.onOptionsItemSelected(item)
-
         if (item != null){
 
             when(item.itemId){
@@ -287,7 +287,6 @@ class DashboardActivity : AppCompatActivity() {
                 }
             }
         }
-
         return true
     }
 }

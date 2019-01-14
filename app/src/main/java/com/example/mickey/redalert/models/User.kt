@@ -1,12 +1,13 @@
 package com.example.mickey.redalert.models
 
 
-import java.sql.Timestamp
+import android.os.Parcel
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 import kotlin.collections.ArrayList
 
-
-class User {
+class User() : Parcelable {
     var user_id: String ?= null
     var user_firstName: String ?= null
     var user_lastName: String ?= null
@@ -20,10 +21,26 @@ class User {
     var user_isOrganDonor: Boolean ?= null
     var user_allergies: ArrayList<String> ?= null
     var user_emergencyContacts: ArrayList<String> ?= null
+    var user_token: String ?= null
+    var user_isEru: Boolean ?= null
+    var user_eruTypeOfService: String ?= null
 
+    constructor(parcel: Parcel) : this() {
+        user_id = parcel.readString()
+        user_firstName = parcel.readString()
+        user_lastName = parcel.readString()
+        user_email = parcel.readString()
+        user_address = parcel.readString()
+        user_contactNumber = parcel.readString()
+        user_gender = parcel.readString()
+        user_profilePictureURL = parcel.readString()
+        user_bloodType = parcel.readString()
+        user_isOrganDonor = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        user_token = parcel.readString()
+        user_isEru = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        user_eruTypeOfService = parcel.readString()
+    }
 
-
-    constructor()
     constructor(
         user_id: String?,
         user_firstName: String?,
@@ -37,8 +54,11 @@ class User {
         user_bloodType: String?,
         user_isOrganDonor: Boolean?,
         user_allergies: ArrayList<String>?,
-        user_emergencyContacts: ArrayList<String>?
-    ) {
+        user_emergencyContacts: ArrayList<String>?,
+        user_token: String?,
+        user_isEru: Boolean?,
+        user_eruTypeOfService: String?
+    ) : this() {
         this.user_id = user_id
         this.user_firstName = user_firstName
         this.user_lastName = user_lastName
@@ -52,6 +72,39 @@ class User {
         this.user_isOrganDonor = user_isOrganDonor
         this.user_allergies = user_allergies
         this.user_emergencyContacts = user_emergencyContacts
+        this.user_token = user_token
+        this.user_isEru = user_isEru
+        this.user_eruTypeOfService = user_eruTypeOfService
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(user_id)
+        parcel.writeString(user_firstName)
+        parcel.writeString(user_lastName)
+        parcel.writeString(user_email)
+        parcel.writeString(user_address)
+        parcel.writeString(user_contactNumber)
+        parcel.writeString(user_gender)
+        parcel.writeString(user_profilePictureURL)
+        parcel.writeString(user_bloodType)
+        parcel.writeValue(user_isOrganDonor)
+        parcel.writeString(user_token)
+        parcel.writeValue(user_isEru)
+        parcel.writeString(user_eruTypeOfService)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<User> {
+        override fun createFromParcel(parcel: Parcel): User {
+            return User(parcel)
+        }
+
+        override fun newArray(size: Int): Array<User?> {
+            return arrayOfNulls(size)
+        }
     }
 
 

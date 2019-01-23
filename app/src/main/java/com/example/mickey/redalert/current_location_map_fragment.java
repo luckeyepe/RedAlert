@@ -227,19 +227,19 @@ public class current_location_map_fragment extends FragmentActivity implements O
 
             switch (eruTypeOfService) {
                 case "police": {
-                    receivingUserUID = "tHPVJ0QTDCMsufaIEU0X7GnRnrR2";
+                    receivingUserUID = "mxdrUsjYZSe7Ml8wozKyWDySdaN2";
                     message.setMessage_recieverID(receivingUserUID);
                     break;
                 }
 
                 case "ambulance": {
-                    receivingUserUID = "SdYmJRDy31aqy8RFCJ1f8h5ScTL2";
+                    receivingUserUID = "mxdrUsjYZSe7Ml8wozKyWDySdaN2";
                     message.setMessage_recieverID(receivingUserUID);
                     break;
                 }
 
                 case "fire department": {
-                    receivingUserUID = "9bg4eHlfvGY99Ql6NATwc9PTR9p2";
+                    receivingUserUID = "mxdrUsjYZSe7Ml8wozKyWDySdaN2";
                     message.setMessage_recieverID(receivingUserUID);
                     break;
                 }

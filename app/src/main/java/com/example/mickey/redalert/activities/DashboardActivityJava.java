@@ -40,6 +40,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -67,6 +68,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
     private FusedLocationProviderClient clientLocation;
     LatLng latLngCurrent;
     Location currentLocation;
+    private boolean IS_ERU = false;
 
 
 
@@ -81,58 +83,127 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                    DocumentReference db = FirebaseFirestore.getInstance().collection("Users")
-                            .document(currentUser.getUid());
-                    db.update("user_token", instanceIdResult.getToken());
-                    db.update("user_instanceID", instanceIdResult.getId());
-                    Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
+                DocumentReference db = FirebaseFirestore.getInstance().collection("Users")
+                        .document(currentUser.getUid());
+                db.update("user_token", instanceIdResult.getToken());
+                db.update("user_instanceID", instanceIdResult.getId());
+                Log.d("Dashboard", "Token: "+instanceIdResult.getToken());
             }
         });
 
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        User user = documentSnapshot.toObject(User.class);
+                        IS_ERU =  user.getUser_isEru();
+                    }
+                });
+
 
         refs();
-        btn_dashboardEmergency.setOnClickListener(reportEmergency);
-        btn_dashboardFireDepartment.setOnClickListener(reportFireDepartmentEmergency);
-        btn_dashboardAmbulance.setOnClickListener(reportAmbulanceEmergency);
-        btn_dashboardPolice.setOnClickListener(reportPoliceEmergency);
+        btn_dashboardEmergency.setOnLongClickListener(reportEmergency);
+        btn_dashboardFireDepartment.setOnLongClickListener(reportFireDepartmentEmergency);
+        btn_dashboardAmbulance.setOnLongClickListener(reportAmbulanceEmergency);
+        btn_dashboardPolice.setOnLongClickListener(reportPoliceEmergency);
 
     }
 
-    private View.OnClickListener reportEmergency = new View.OnClickListener() {
+    private View.OnLongClickListener reportEmergency = new View.OnLongClickListener() {
         @Override
-        public void onClick(View view) {
-            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
-            intent.putExtra("eruTypeOfService", "emergency");
-            startActivity(intent);
+        public boolean onLongClick(View v) {
+            if (IS_ERU) {
+                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG);
+            }else {
+                Intent intent = new Intent(DashboardActivityJava.this, current_location_map_fragment.class);
+                intent.putExtra("eruTypeOfService", "emergency");
+                startActivity(intent);
+            }
+            return true;
         }
     };
 
-    private View.OnClickListener reportFireDepartmentEmergency = new View.OnClickListener() {
+//    private View.OnClickListener reportEmergency = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View view) {
+//            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+//            intent.putExtra("eruTypeOfService", "emergency");
+//            startActivity(intent);
+//        }
+//    };
+
+    private View.OnLongClickListener reportFireDepartmentEmergency = new View.OnLongClickListener() {
         @Override
-        public void onClick(View view) {
-            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
-            intent.putExtra("eruTypeOfService", "fire department");
-            startActivity(intent);
+        public boolean onLongClick(View v) {
+            if (IS_ERU) {
+                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG);
+            }else {
+                Intent intent = new Intent(DashboardActivityJava.this, current_location_map_fragment.class);
+                intent.putExtra("eruTypeOfService", "fire department");
+                startActivity(intent);
+            }
+            return true;
         }
     };
 
-    private View.OnClickListener reportAmbulanceEmergency = new View.OnClickListener() {
+//    private View.OnClickListener reportFireDepartmentEmergency = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View view) {
+//            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+//            intent.putExtra("eruTypeOfService", "fire department");
+//            startActivity(intent);
+//        }
+//    };
+
+    private View.OnLongClickListener reportAmbulanceEmergency = new View.OnLongClickListener() {
         @Override
-        public void onClick(View view) {
-            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
-            intent.putExtra("eruTypeOfService", "ambulance");
-            startActivity(intent);
+        public boolean onLongClick(View v) {
+            if (IS_ERU) {
+                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG);
+            }else {
+                Intent intent = new Intent(DashboardActivityJava.this, current_location_map_fragment.class);
+                intent.putExtra("eruTypeOfService", "ambulance");
+                startActivity(intent);
+            }
+            return true;
         }
     };
 
-    private View.OnClickListener reportPoliceEmergency = new View.OnClickListener() {
+//    private View.OnClickListener reportAmbulanceEmergency = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View view) {
+//            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+//            intent.putExtra("eruTypeOfService", "ambulance");
+//            startActivity(intent);
+//        }
+//    };
+
+    private View.OnLongClickListener reportPoliceEmergency = new View.OnLongClickListener() {
         @Override
-        public void onClick(View view) {
-            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
-            intent.putExtra("eruTypeOfService", "police");
-            startActivity(intent);
+        public boolean onLongClick(View v) {
+            if (IS_ERU) {
+                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG);
+            }else {
+                Intent intent = new Intent(DashboardActivityJava.this, current_location_map_fragment.class);
+                intent.putExtra("eruTypeOfService", "police");
+                startActivity(intent);
+            }
+            return true;
         }
     };
+
+//    private View.OnClickListener reportPoliceEmergency = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View view) {
+//            Intent intent = new Intent(DashboardActivityJava.this,current_location_map_fragment.class);
+//            intent.putExtra("eruTypeOfService", "police");
+//            startActivity(intent);
+//        }
+//    };
 
 
     private boolean checkPermission(String permission)

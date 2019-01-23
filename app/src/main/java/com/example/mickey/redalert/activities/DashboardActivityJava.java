@@ -117,7 +117,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         @Override
         public boolean onLongClick(View v) {
             if (IS_ERU) {
-                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG).show();
             }else {
                 Intent intent = new Intent(DashboardActivityJava.this, current_location_map_fragment.class);
                 intent.putExtra("eruTypeOfService", "emergency");
@@ -140,7 +140,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         @Override
         public boolean onLongClick(View v) {
             if (IS_ERU) {
-                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG).show();
             }else {
                 Intent intent = new Intent(DashboardActivityJava.this, current_location_map_fragment.class);
                 intent.putExtra("eruTypeOfService", "fire department");
@@ -163,7 +163,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         @Override
         public boolean onLongClick(View v) {
             if (IS_ERU) {
-                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG).show();
             }else {
                 Intent intent = new Intent(DashboardActivityJava.this, current_location_map_fragment.class);
                 intent.putExtra("eruTypeOfService", "ambulance");
@@ -186,7 +186,7 @@ public class DashboardActivityJava extends AppCompatActivity implements OnMapRea
         @Override
         public boolean onLongClick(View v) {
             if (IS_ERU) {
-                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "You cannot use this function", Toast.LENGTH_LONG).show();
             }else {
                 Intent intent = new Intent(DashboardActivityJava.this, current_location_map_fragment.class);
                 intent.putExtra("eruTypeOfService", "police");
